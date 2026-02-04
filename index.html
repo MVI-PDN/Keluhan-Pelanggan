@@ -19,7 +19,6 @@
 
     <!-- Configuration (FIXED: Added Safety Check) -->
     <script>
-        // Definisikan konfigurasi terlebih dahulu
         const tailwindConfig = {
             theme: {
                 extend: {
@@ -32,11 +31,9 @@
             }
         };
 
-        // Cek apakah Tailwind sudah dimuat
         if (typeof tailwind !== 'undefined') {
             tailwind.config = tailwindConfig;
         } else {
-            // Jika belum, tunggu window load
             window.addEventListener('load', function() {
                 if (typeof tailwind !== 'undefined') {
                     tailwind.config = tailwindConfig;
@@ -62,45 +59,58 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans leading-relaxed overflow-x-hidden">
 
-    <!-- 1. HALAMAN LOGIN (Tampil Awal) -->
-    <section id="login-section" class="min-h-screen flex flex-col items-center justify-center p-4 bg-slate-50">
-        <div class="bg-white p-8 rounded-2xl shadow-xl border border-slate-100 max-w-sm w-full text-center fade-in">
-            <!-- LOGO TEXT ONLY - DARK BLUE ITALIC -->
+    <!-- 1. LOGIN OVERLAY (Hidden by default, shown on button click) -->
+    <div id="login-overlay" class="hidden fixed inset-0 bg-slate-900 bg-opacity-60 z-[9999] flex items-center justify-center backdrop-blur-sm transition-opacity">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl border border-slate-100 max-w-sm w-full text-center relative fade-in">
+            <!-- Close Button -->
+            <button onclick="hideLogin()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+
+            <!-- LOGO TEXT -->
             <h1 class="text-4xl font-bold text-brand-900 italic mb-4 tracking-wide">Microvision</h1>
-            
-            <h2 class="text-lg font-semibold text-slate-600 mb-6 uppercase tracking-wider">Pengaduan Pelanggan</h2>
+            <h2 class="text-lg font-semibold text-slate-600 mb-6 uppercase tracking-wider">Akses Dashboard</h2>
             
             <form onsubmit="handleLogin(event)" class="space-y-4">
-                <input type="email" id="login-email" required class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none text-sm transition text-center" placeholder="Masukkan Email Anda">
-                <button type="submit" class="w-full bg-brand-900 text-white py-3 rounded-lg font-bold hover:bg-brand-800 transition shadow-md text-sm">Masuk Sistem</button>
+                <input type="email" id="login-email" required class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none text-sm transition text-center" placeholder="Masukkan Email Admin">
+                <button type="submit" class="w-full bg-brand-900 text-white py-3 rounded-lg font-bold hover:bg-brand-800 transition shadow-md text-sm">Masuk</button>
             </form>
-            <p class="mt-4 text-[10px] text-slate-400">Admin access required for Dashboard</p>
+            <p class="mt-4 text-[10px] text-slate-400">Khusus untuk Tim QC & Management</p>
         </div>
-    </section>
+    </div>
 
-    <!-- 2. APLIKASI UTAMA (Disembunyikan saat belum login) -->
-    <div id="app-container" class="hidden min-h-screen flex flex-col">
+    <!-- 2. APLIKASI UTAMA (Visible immediately) -->
+    <div id="app-container" class="min-h-screen flex flex-col">
         
         <!-- Navigation Bar -->
         <nav class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-16">
                     <div class="flex items-center gap-3">
-                        <!-- NAVBAR LOGO UPDATED -->
+                        <!-- NAVBAR LOGO -->
                         <h1 class="font-bold text-brand-900 text-2xl leading-tight italic tracking-wide">Microvision</h1>
                     </div>
-                    <div class="flex items-center space-x-2 md:space-x-4">
-                        <!-- Dashboard Button (Hidden for non-admins) -->
+                    <div class="flex items-center space-x-3">
+                        <!-- Dashboard Button (Hidden initially) -->
                         <button onclick="switchTab('dashboard')" id="nav-dashboard" class="hidden px-4 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors">
                             Dashboard
                         </button>
+                        
+                        <!-- Laporan Baru Button (Always Visible) -->
                         <button onclick="switchTab('form')" id="nav-form" class="px-4 py-2 rounded-md text-sm font-medium bg-brand-50 text-brand-600 border border-brand-100 transition-colors shadow-sm">
                             Laporan Baru
                         </button>
-                        <div class="flex items-center border-l pl-4 ml-2 gap-3">
+
+                        <!-- LOGIN BUTTON (Visible by default) -->
+                        <button id="btn-login-trigger" onclick="showLogin()" class="px-4 py-2 rounded-md text-sm font-medium text-white bg-brand-900 hover:bg-brand-800 transition-colors shadow-sm">
+                            Login Admin
+                        </button>
+
+                        <!-- USER PANEL (Hidden by default) -->
+                        <div id="user-panel" class="hidden flex items-center border-l pl-4 ml-2 gap-3">
                             <div class="text-right hidden md:block">
                                 <span class="block text-xs font-bold text-slate-700" id="user-display">User</span>
-                                <span class="block text-[10px] text-slate-400" id="role-display">Sales</span>
+                                <span class="block text-[10px] text-slate-400" id="role-display">Admin</span>
                             </div>
                             <button onclick="logout()" class="text-slate-400 hover:text-red-500 transition" title="Logout">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
@@ -113,7 +123,7 @@
 
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow">
 
-            <!-- DASHBOARD VIEW -->
+            <!-- DASHBOARD VIEW (Hidden initially) -->
             <section id="dashboard-view" class="hidden space-y-8 fade-in">
                 <div class="flex justify-between items-end bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
                     <div>
@@ -196,8 +206,8 @@
                 </div>
             </section>
 
-            <!-- FORM VIEW -->
-            <section id="form-view" class="hidden fade-in">
+            <!-- FORM VIEW (Visible by default) -->
+            <section id="form-view" class="fade-in">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div class="lg:col-span-2 space-y-6">
                         <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
@@ -349,32 +359,42 @@
         let currentUser = "";
 
         // --- AUTH FUNCTIONS ---
+        function showLogin() {
+            document.getElementById('login-overlay').classList.remove('hidden');
+        }
+
+        function hideLogin() {
+            document.getElementById('login-overlay').classList.add('hidden');
+        }
+
         function handleLogin(e) {
             e.preventDefault();
             const email = document.getElementById('login-email').value.toLowerCase();
             currentUser = email;
             
-            // Hide Login Section, Show App
-            document.getElementById('login-section').classList.add('hidden');
-            document.getElementById('app-container').classList.remove('hidden');
+            // Hide Login Overlay
+            hideLogin();
             document.getElementById('user-display').innerText = email.split('@')[0];
 
             // Cek apakah email mengandung keyword admin
             if (ADMIN_KEYWORDS.some(role => email.includes(role))) {
                 isAdmin = true;
+                // Show Dashboard menu & User Panel, Hide Login Button
                 document.getElementById('nav-dashboard').classList.remove('hidden');
+                document.getElementById('btn-login-trigger').classList.add('hidden');
+                document.getElementById('user-panel').classList.remove('hidden');
+                
                 document.getElementById('role-display').innerText = "Administrator";
                 switchTab('dashboard'); 
-                fetchData(); // Load data from Sheet immediately
+                fetchData(); 
             } else {
-                isAdmin = false;
-                document.getElementById('role-display').innerText = "Sales Team";
-                switchTab('form'); 
+                alert("Akses ditolak. Email Anda tidak memiliki izin Admin.");
+                // Reset to default state if needed or just stay on form
             }
         }
 
         function logout() {
-            location.reload();
+            location.reload(); // Refresh to reset state
         }
 
         // --- NAVIGATION ---
@@ -683,6 +703,9 @@
         document.getElementById('input-urgency').addEventListener('input', function(e) {
             document.getElementById('urgency-val').innerText = e.target.value;
         });
+
+        // Initialize default date
+        document.getElementById('input-date').valueAsDate = new Date();
 
     </script>
 </body>
