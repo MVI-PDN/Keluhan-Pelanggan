@@ -14,7 +14,7 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Markdown Parser (for AI responses) -->
+    <!-- Markdown Parser -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <!-- Configuration -->
@@ -22,24 +22,10 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
-                        brand: {
-                            50: '#f0f9ff',
-                            100: '#e0f2fe',
-                            500: '#0ea5e9',
-                            600: '#0284c7',
-                            800: '#075985',
-                            900: '#0c4a6e',
-                        },
-                        ai: {
-                            50: '#f5f3ff',
-                            100: '#ede9fe',
-                            600: '#7c3aed', // Violet for AI
-                            700: '#6d28d9',
-                        }
+                        brand: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 800: '#075985', 900: '#0c4a6e' },
+                        ai: { 50: '#f5f3ff', 100: '#ede9fe', 600: '#7c3aed', 700: '#6d28d9' }
                     }
                 }
             }
@@ -47,47 +33,44 @@
     </script>
 
     <style>
-        /* Custom scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
-        /* Chart Container Strict Styling */
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 100%;
-            height: 300px;
-        }
-        @media (min-width: 768px) {
-            .chart-container { height: 350px; }
-        }
-        
+        .chart-container { position: relative; width: 100%; height: 300px; }
+        @media (min-width: 768px) { .chart-container { height: 350px; } }
         .fade-in { animation: fadeIn 0.4s ease-in-out; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* AI Loading Animation */
-        .ai-pulse {
-            animation: pulse-purple 2s infinite;
-        }
-        @keyframes pulse-purple {
-            0% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(124, 58, 237, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .ai-pulse { animation: pulse-purple 2s infinite; }
+        @keyframes pulse-purple { 0% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(124, 58, 237, 0); } 100% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0); } }
+        
+        /* Login Overlay */
+        #login-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.95); z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans leading-relaxed">
+<body class="bg-slate-50 text-slate-800 font-sans leading-relaxed overflow-x-hidden">
+
+    <!-- LOGIN OVERLAY -->
+    <div id="login-overlay">
+        <div class="bg-white p-8 rounded-2xl shadow-xl border border-slate-200 max-w-md w-full text-center">
+            <div class="bg-brand-600 text-white w-16 h-16 rounded-full flex items-center justify-center text-3xl font-bold mx-auto mb-6">M</div>
+            <h2 class="text-2xl font-bold text-slate-800 mb-2">Selamat Datang</h2>
+            <p class="text-slate-500 mb-6 text-sm">Silakan masukkan email kerja Anda untuk mengakses sistem.</p>
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <input type="email" id="login-email" required placeholder="nama@microvision.com" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none">
+                <button type="submit" class="w-full bg-brand-600 text-white py-3 rounded-lg font-bold hover:bg-brand-700 transition">Masuk Sistem</button>
+            </form>
+        </div>
+    </div>
 
     <!-- Navigation Bar -->
-    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm hidden" id="main-nav">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
-                <!-- LOGO & BRANDING UPDATED -->
                 <div class="flex items-center gap-3">
                     <div class="bg-brand-600 text-white p-2 rounded-lg font-bold text-xl tracking-tighter">M</div>
                     <div>
@@ -95,105 +78,86 @@
                         <p class="text-xs text-slate-500 tracking-wider">Realizing Your full Idea</p>
                     </div>
                 </div>
-                
                 <div class="flex items-center space-x-2 md:space-x-4">
-                    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="px-4 py-2 rounded-md text-sm font-medium bg-brand-50 text-brand-600 border border-brand-100 transition-colors shadow-sm">
+                    <!-- Dashboard Button (Hidden for non-admins) -->
+                    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="hidden px-4 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors">
                         Dashboard
                     </button>
-                    <button onclick="switchTab('form')" id="nav-form" class="px-4 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors">
+                    <button onclick="switchTab('form')" id="nav-form" class="px-4 py-2 rounded-md text-sm font-medium bg-brand-50 text-brand-600 border border-brand-100 transition-colors shadow-sm">
                         Laporan Baru
                     </button>
+                    <div class="text-xs text-right border-l pl-3 ml-2">
+                        <span class="block font-bold text-slate-700" id="user-display">User</span>
+                        <span class="text-slate-400 cursor-pointer hover:text-red-500" onclick="logout()">Logout</span>
+                    </div>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 hidden" id="main-content">
 
         <!-- DASHBOARD VIEW -->
-        <section id="dashboard-view" class="space-y-8 fade-in">
-            <!-- Intro Block -->
-            <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
-                <h2 class="text-2xl font-bold text-slate-800 mb-2">Quality Control Dashboard</h2>
-                <p class="text-slate-600 max-w-3xl">
-                    Sistem pemantauan kualitas terintegrasi untuk unit Videotron, IFP, dan Videowall. Data ini digunakan untuk evaluasi teknis dan perbaikan berkelanjutan.
-                </p>
+        <section id="dashboard-view" class="hidden space-y-8 fade-in">
+            <div class="flex justify-between items-center bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800">Quality Control Dashboard</h2>
+                    <p class="text-slate-600 text-sm">Data Real-time dari Google Sheets.</p>
+                </div>
+                <button onclick="fetchData()" class="text-sm bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-2 rounded-lg transition flex items-center gap-2">
+                    🔄 Refresh Data
+                </button>
             </div>
 
-            <!-- Key Metrics Grid -->
+            <!-- Key Metrics -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Metric 1 -->
-                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm transition hover:shadow-md">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Laporan</h3>
-                        <span class="text-3xl font-bold text-brand-600" id="total-reports">0</span>
-                    </div>
-                    <div class="w-full bg-slate-100 rounded-full h-2">
-                        <div class="bg-brand-500 h-2 rounded-full" style="width: 0%"></div>
-                    </div>
-                    <p class="text-xs text-slate-400 mt-2">Bulan Ini</p>
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="text-xs font-bold text-slate-500 uppercase">Total Kasus</h3>
+                    <span class="text-3xl font-bold text-brand-600" id="total-reports">Loading...</span>
                 </div>
-                 <!-- Metric 2 -->
-                 <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm transition hover:shadow-md">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Rata-rata Urgensi</h3>
-                        <span class="text-3xl font-bold text-orange-500" id="avg-urgency-display">0.0</span>
-                    </div>
-                    <div class="w-full bg-slate-100 rounded-full h-2">
-                        <div class="bg-orange-500 h-2 rounded-full" style="width: 0%"></div>
-                    </div>
-                    <p class="text-xs text-slate-400 mt-2">Skala 1-5</p>
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="text-xs font-bold text-slate-500 uppercase">Kasus Pending/Open</h3>
+                    <span class="text-3xl font-bold text-orange-500" id="pending-reports">Loading...</span>
                 </div>
-                 <!-- Metric 3 -->
-                 <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm transition hover:shadow-md">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Status Close Case</h3>
-                        <span class="text-3xl font-bold text-green-600">0%</span>
-                    </div>
-                    <div class="w-full bg-slate-100 rounded-full h-2">
-                        <div class="bg-green-500 h-2 rounded-full" style="width: 0%"></div>
-                    </div>
-                    <p class="text-xs text-slate-400 mt-2">Target: 90%</p>
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="text-xs font-bold text-slate-500 uppercase">Kasus Closed</h3>
+                    <span class="text-3xl font-bold text-green-600" id="closed-reports">Loading...</span>
                 </div>
             </div>
 
-            <!-- Charts Row 1 -->
+            <!-- Case Queue List (NEW FEATURE) -->
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="p-6 border-b border-slate-100">
+                    <h3 class="font-bold text-lg text-slate-800">📋 Antrian Kasus (Live Queue)</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-slate-600">
+                        <thead class="text-xs text-slate-700 uppercase bg-slate-50">
+                            <tr>
+                                <th class="px-6 py-3">Tanggal</th>
+                                <th class="px-6 py-3">Sales / PIC</th>
+                                <th class="px-6 py-3">Project / Lokasi</th>
+                                <th class="px-6 py-3">Masalah</th>
+                                <th class="px-6 py-3">Status</th>
+                                <th class="px-6 py-3">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="case-table-body">
+                            <tr><td colspan="6" class="px-6 py-4 text-center">Memuat data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Charts -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- Chart: Categories -->
                 <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                    <div class="mb-4">
-                        <h3 class="text-lg font-bold text-slate-800">Distribusi Kategori Masalah</h3>
-                        <p class="text-sm text-slate-500">Analisis kerusakan (Dead Pixel, Modul, PSU, dll).</p>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="categoryChart"></canvas>
-                    </div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-4">Distribusi Kategori</h3>
+                    <div class="chart-container"><canvas id="categoryChart"></canvas></div>
                 </div>
-
-                <!-- Chart: Actions -->
                 <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                     <div class="mb-4">
-                        <h3 class="text-lg font-bold text-slate-800">Permintaan Tindak Lanjut</h3>
-                        <p class="text-sm text-slate-500">Proporsi ekspektasi pelanggan (Service On-site vs Replacement).</p>
-                    </div>
-                    <div class="chart-container flex justify-center">
-                        <canvas id="actionChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Charts Row 2 -->
-            <div class="grid grid-cols-1 lg:grid-cols-1 gap-8">
-                 <!-- Chart: Urgency Trend -->
-                 <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                     <div class="mb-4">
-                        <h3 class="text-lg font-bold text-slate-800">Tren Tingkat Urgensi Laporan</h3>
-                        <p class="text-sm text-slate-500">Monitoring kasus urgent (Event mati total / Layar blank).</p>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="urgencyChart"></canvas>
-                    </div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-4">Urgency Trend</h3>
+                    <div class="chart-container"><canvas id="urgencyChart"></canvas></div>
                 </div>
             </div>
         </section>
@@ -201,507 +165,174 @@
         <!-- FORM VIEW -->
         <section id="form-view" class="hidden fade-in">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                
-                <!-- Left Column: The Form -->
                 <div class="lg:col-span-2 space-y-6">
                     <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
-                        <h2 class="text-2xl font-bold text-slate-800 mb-2">Formulir Keluhan Pelanggan</h2>
-                        <p class="text-slate-600 mb-6 text-sm">
-                            Mohon lengkapi data teknis berikut untuk mempercepat proses analisis QC.
-                        </p>
+                        <h2 class="text-2xl font-bold text-slate-800 mb-2">Formulir Keluhan Baru</h2>
+                        <p class="text-slate-600 mb-6 text-sm">Lengkapi data teknis untuk analisis QC.</p>
 
                         <form id="complaintForm" class="space-y-8" onsubmit="handleFormSubmit(event)">
-                            
                             <!-- Bagian 1 -->
-                            <div class="bg-slate-50 p-6 rounded-lg border border-slate-200 transition hover:border-brand-200">
-                                <h3 class="font-bold text-brand-800 mb-4 flex items-center">
-                                    <span class="bg-brand-100 text-brand-600 py-1 px-2 rounded text-xs mr-2 font-bold">BAGIAN 1</span>
-                                    Identitas Pelapor & Pelanggan
-                                </h3>
+                            <div class="bg-slate-50 p-6 rounded-lg border border-slate-200">
+                                <h3 class="font-bold text-brand-800 mb-4 text-sm bg-brand-100 inline-block px-2 py-1 rounded">IDENTITAS</h3>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                    <div class="form-group" onfocusin="updateContext('identity')">
+                                    <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Sales / PIC *</label>
-                                        <input type="text" id="input-sales" required class="w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 p-2.5 border transition">
+                                        <input type="text" id="input-sales" required class="w-full rounded border-slate-300 p-2.5 border">
                                     </div>
-                                    <div class="form-group" onfocusin="updateContext('identity')">
+                                    <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-1">Tanggal Laporan *</label>
-                                        <input type="date" id="input-date" required class="w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 p-2.5 border transition">
+                                        <input type="date" id="input-date" required class="w-full rounded border-slate-300 p-2.5 border">
                                     </div>
-                                    <div class="form-group md:col-span-2" onfocusin="updateContext('identity')">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Perusahaan / Customer *</label>
-                                        <input type="text" id="input-customer" required class="w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 p-2.5 border transition">
+                                    <div class="md:col-span-2">
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Customer / PT *</label>
+                                        <input type="text" id="input-customer" required class="w-full rounded border-slate-300 p-2.5 border">
                                     </div>
-                                    <div class="form-group md:col-span-2" onfocusin="updateContext('po_info')">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Nomor PO / Invoice / Surat Jalan *</label>
-                                        <input type="text" id="input-po" required class="w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 p-2.5 border transition" placeholder="Contoh: INV-2024-VID-001">
+                                    <div class="md:col-span-2">
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">No PO / Kontrak *</label>
+                                        <input type="text" id="input-po" required class="w-full rounded border-slate-300 p-2.5 border">
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Bagian 2 -->
-                            <div class="bg-slate-50 p-6 rounded-lg border border-slate-200 transition hover:border-brand-200">
-                                <h3 class="font-bold text-brand-800 mb-4 flex items-center">
-                                    <span class="bg-brand-100 text-brand-600 py-1 px-2 rounded text-xs mr-2 font-bold">BAGIAN 2</span>
-                                    Data Teknis Perangkat
-                                </h3>
+                            <div class="bg-slate-50 p-6 rounded-lg border border-slate-200">
+                                <h3 class="font-bold text-brand-800 mb-4 text-sm bg-brand-100 inline-block px-2 py-1 rounded">DATA UNIT</h3>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                    <div class="form-group md:col-span-2" onfocusin="updateContext('product_name')">
+                                    <div class="md:col-span-2">
                                         <label class="block text-sm font-semibold text-slate-700 mb-1">Tipe Produk / Model *</label>
-                                        <input type="text" id="input-product" required class="w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 p-2.5 border transition" placeholder="Misal: Videotron P2.5 Indoor / IFP 86 Inch">
+                                        <input type="text" id="input-product" required class="w-full rounded border-slate-300 p-2.5 border" placeholder="Ex: Videotron P2.5 Indoor">
                                     </div>
-                                    <div class="form-group md:col-span-2" onfocusin="updateContext('batch_code')">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Serial Number (SN) / Kode Batch Modul *</label>
-                                        <input type="text" id="input-batch" required class="w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 p-2.5 border transition" placeholder="Lihat di belakang kabinet/modul">
+                                    <!-- CHANGE 4: Total Unit -> Project -->
+                                    <div class="md:col-span-2">
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Project / Lokasi *</label>
+                                        <input type="text" id="input-project" required class="w-full rounded border-slate-300 p-2.5 border" placeholder="Ex: Ruang Rapat Lt. 3">
                                     </div>
-                                    <div class="form-group" onfocusin="updateContext('qty')">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Total Unit Terpasang *</label>
-                                        <input type="number" id="input-qty-total" required class="w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 p-2.5 border transition">
+                                    <div class="md:col-span-2">
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Serial Number / Batch Modul</label>
+                                        <input type="text" id="input-batch" class="w-full rounded border-slate-300 p-2.5 border">
                                     </div>
-                                    <div class="form-group" onfocusin="updateContext('qty')">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Unit/Modul Bermasalah *</label>
-                                        <input type="number" id="input-qty-bad" required class="w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 p-2.5 border transition">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Jml. Unit Bermasalah *</label>
+                                        <input type="number" id="input-qty-bad" required class="w-full rounded border-slate-300 p-2.5 border">
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Bagian 3: Detail Masalah & Bukti (AI ENHANCED) -->
-                            <div class="bg-slate-50 p-6 rounded-lg border border-slate-200 transition hover:border-brand-200 relative overflow-hidden">
-                                <!-- AI Decorative Background -->
-                                <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-brand-100 rounded-full blur-2xl opacity-50"></div>
-
-                                <h3 class="font-bold text-brand-800 mb-4 flex items-center relative z-10">
-                                    <span class="bg-brand-100 text-brand-600 py-1 px-2 rounded text-xs mr-2 font-bold">BAGIAN 3</span>
-                                    Detail Masalah & Bukti
-                                </h3>
-                                <div class="space-y-5 relative z-10">
-                                    <div class="form-group" onfocusin="updateContext('category')">
+                            <!-- Bagian 3 -->
+                            <div class="bg-slate-50 p-6 rounded-lg border border-slate-200">
+                                <h3 class="font-bold text-brand-800 mb-4 text-sm bg-brand-100 inline-block px-2 py-1 rounded">DETAIL MASALAH</h3>
+                                <div class="space-y-5">
+                                    <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-1">Kategori Masalah *</label>
-                                        <select id="input-category" required class="w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 p-2.5 border transition bg-white">
-                                            <option value="">-- Pilih Kategori Kerusakan --</option>
-                                            <option value="Dead Pixel/Lampu Mati">Dead Pixel / Lampu Mati</option>
-                                            <option value="Modul Error/Blok">Modul Error / Blok Warna Salah</option>
-                                            <option value="Power Supply/Mati Total">Power Supply / Mati Total</option>
-                                            <option value="Receiving Card/Signal">Receiving Card / No Signal</option>
-                                            <option value="Fisik Layar Pecah">Fisik Layar Pecah / Gores (IFP)</option>
-                                            <option value="Software/Config">Software / Config Error</option>
+                                        <select id="input-category" required class="w-full rounded border-slate-300 p-2.5 border bg-white">
+                                            <option value="">-- Pilih --</option>
+                                            <option value="Dead Pixel">Dead Pixel / Lampu Mati</option>
+                                            <option value="Modul Error">Modul Error / Blok Warna</option>
+                                            <option value="Mati Total">Power Supply / Mati Total</option>
+                                            <option value="No Signal">No Signal / Receiving Card</option>
+                                            <option value="Fisik">Kerusakan Fisik / Pecah</option>
+                                            <option value="Software">Software / Config</option>
                                             <option value="Lainnya">Lainnya</option>
                                         </select>
                                     </div>
-                                    <div class="form-group" onfocusin="updateContext('chronology')">
-                                        <div class="flex justify-between items-center mb-1">
-                                            <label class="block text-sm font-semibold text-slate-700">Kronologi & Deskripsi *</label>
-                                            <button type="button" onclick="generateAnalysis()" class="text-xs flex items-center bg-ai-100 text-ai-700 px-2 py-1 rounded-full hover:bg-ai-600 hover:text-white transition-all border border-ai-600">
-                                                ✨ Analisis Teknis AI
-                                            </button>
+                                    <div>
+                                        <div class="flex justify-between mb-1">
+                                            <label class="block text-sm font-semibold text-slate-700">Kronologi *</label>
+                                            <button type="button" onclick="generateAnalysis()" class="text-xs bg-ai-100 text-ai-700 px-2 rounded hover:bg-ai-600 hover:text-white transition">✨ AI Analysis</button>
                                         </div>
-                                        <textarea id="input-chronology" required rows="4" class="w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 p-2.5 border transition" placeholder="Ceritakan detail kejadian (cth: Layar berkedip setelah hujan, IFP tidak respon sentuhan)..."></textarea>
-                                        
-                                        <!-- AI Output Area -->
-                                        <div id="ai-analysis-result" class="hidden mt-3 bg-white border border-ai-600 rounded-lg p-4 shadow-sm">
-                                            <div class="flex items-center space-x-2 mb-2 border-b border-gray-100 pb-2">
-                                                <span class="text-lg">🤖</span>
-                                                <h4 class="font-bold text-ai-700 text-sm">Analisis AI (Technical Diagnosis)</h4>
-                                            </div>
-                                            <div id="analysis-content" class="text-sm text-slate-700 prose prose-sm max-w-none">
-                                                <!-- Content goes here -->
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group" onfocusin="updateContext('sample')">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Status Barang Bukti (Modul/Unit) *</label>
-                                        <select id="input-sample-status" required class="w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 p-2.5 border transition bg-white">
-                                            <option value="">-- Pilih Status --</option>
-                                            <option value="Sales">Part/Unit dibawa Sales</option>
-                                            <option value="Customer">Part/Unit masih terpasang di Customer</option>
-                                            <option value="None">Part/Unit sudah dibuang/hilang</option>
-                                        </select>
+                                        <textarea id="input-chronology" required rows="4" class="w-full rounded border-slate-300 p-2.5 border"></textarea>
+                                        <div id="ai-analysis-result" class="hidden mt-2 bg-white border border-ai-600 rounded p-3 text-sm text-slate-700"></div>
                                     </div>
                                 </div>
                             </div>
 
-                             <!-- Bagian 4: Tindak Lanjut (AI ENHANCED) -->
-                             <div class="bg-slate-50 p-6 rounded-lg border border-slate-200 transition hover:border-brand-200 relative overflow-hidden">
-                                <h3 class="font-bold text-brand-800 mb-4 flex items-center relative z-10">
-                                    <span class="bg-brand-100 text-brand-600 py-1 px-2 rounded text-xs mr-2 font-bold">BAGIAN 4</span>
-                                    Tindak Lanjut
-                                </h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 relative z-10">
-                                    <div class="form-group md:col-span-2" onfocusin="updateContext('request')">
-                                        <div class="flex justify-between items-center mb-1">
-                                            <label class="block text-sm font-semibold text-slate-700">Permintaan Customer *</label>
-                                            <button type="button" onclick="generateReply()" class="text-xs flex items-center bg-ai-100 text-ai-700 px-2 py-1 rounded-full hover:bg-ai-600 hover:text-white transition-all border border-ai-600">
-                                                ✨ Buat Draft Balasan WA
-                                            </button>
+                            <!-- Bagian 4 -->
+                            <div class="bg-slate-50 p-6 rounded-lg border border-slate-200">
+                                <h3 class="font-bold text-brand-800 mb-4 text-sm bg-brand-100 inline-block px-2 py-1 rounded">TINDAK LANJUT</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                    <div class="md:col-span-2">
+                                        <div class="flex justify-between mb-1">
+                                            <label class="block text-sm font-semibold text-slate-700">Request Customer *</label>
+                                            <button type="button" onclick="generateReply()" class="text-xs bg-ai-100 text-ai-700 px-2 rounded hover:bg-ai-600 hover:text-white transition">✨ Draft WA</button>
                                         </div>
-                                        <select id="input-request" required class="w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 p-2.5 border transition bg-white mb-2">
-                                            <option value="">-- Pilih Permintaan --</option>
-                                            <option value="Service On-site">Kunjungan Teknisi (Service On-site)</option>
-                                            <option value="Sparepart Replacement">Kirim Sparepart Pengganti</option>
-                                            <option value="Unit Replacement">Ganti Unit Baru (Dead on Arrival)</option>
-                                            <option value="Remote Config">Bantuan Remote Config (TeamViewer)</option>
+                                        <select id="input-request" required class="w-full rounded border-slate-300 p-2.5 border bg-white mb-2">
+                                            <option value="Service On-site">Kunjungan Teknisi</option>
+                                            <option value="Sparepart">Kirim Sparepart</option>
+                                            <option value="Replace Unit">Ganti Unit Baru</option>
+                                            <option value="Remote">Bantuan Remote</option>
                                         </select>
-
-                                        <!-- AI Output Area -->
-                                        <div id="ai-reply-result" class="hidden mt-2 bg-green-50 border border-green-200 rounded-lg p-4 shadow-sm">
-                                            <div class="flex items-center justify-between mb-2 border-b border-green-100 pb-2">
-                                                <div class="flex items-center space-x-2">
-                                                    <span class="text-lg">💬</span>
-                                                    <h4 class="font-bold text-green-800 text-sm">Draft Pesan WhatsApp</h4>
-                                                </div>
-                                                <button type="button" onclick="copyToClipboard()" class="text-xs text-green-600 hover:text-green-800 font-medium">
-                                                    Copy Text
-                                                </button>
-                                            </div>
-                                            <textarea id="reply-content" rows="6" class="w-full text-sm text-slate-700 bg-transparent border-none focus:ring-0 p-0 resize-none font-mono" readonly></textarea>
+                                        <div id="ai-reply-result" class="hidden bg-green-50 border border-green-200 rounded p-3">
+                                            <textarea id="reply-content" rows="4" class="w-full text-xs bg-transparent border-none resize-none" readonly></textarea>
                                         </div>
                                     </div>
-
-                                    <div class="form-group md:col-span-2" onfocusin="updateContext('urgency')">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Tingkat Urgensi (1-5) *</label>
-                                        <div class="flex items-center space-x-4">
-                                            <span class="text-xs text-slate-500">Normal</span>
-                                            <input id="input-urgency" type="range" min="1" max="5" value="3" oninput="updateUrgencyLabel(this.value)" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-600">
-                                            <span class="text-xs text-slate-500 font-bold text-red-600">Urgent!</span>
-                                        </div>
-                                        <div class="text-center text-sm font-bold text-brand-700 mt-1" id="urgency-display">Level: 3</div>
+                                    <div class="md:col-span-2">
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Urgensi (1-5)</label>
+                                        <input id="input-urgency" type="range" min="1" max="5" value="3" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-600">
+                                        <div class="text-center text-xs font-bold text-brand-700">Level: <span id="urgency-val">3</span></div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="pt-4 flex items-center justify-end space-x-4">
-                                <button type="button" onclick="switchTab('dashboard')" class="px-6 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors">
-                                    Batal
-                                </button>
-                                <button type="submit" class="px-6 py-2.5 rounded-lg text-sm font-medium bg-brand-600 text-white hover:bg-brand-700 shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5">
-                                    Kirim Laporan
-                                </button>
+                            <div class="flex justify-end gap-3">
+                                <button type="button" onclick="if(isAdmin) switchTab('dashboard')" class="px-6 py-2 rounded text-slate-600 hover:bg-slate-100">Batal</button>
+                                <button type="submit" class="px-6 py-2 rounded bg-brand-600 text-white hover:bg-brand-700 shadow-md">Kirim Laporan</button>
                             </div>
-
                         </form>
                     </div>
                 </div>
-
-                <!-- Right Column: Context Panel (Sticky) -->
+                
+                <!-- Side Panel Info -->
                 <div class="lg:col-span-1">
-                    <div class="sticky top-24 space-y-6">
-                        <!-- Context Card -->
-                        <div class="bg-brand-50 rounded-xl p-6 border border-brand-100 shadow-sm">
-                            <div class="flex items-center space-x-2 mb-3">
-                                <span class="text-2xl">💡</span>
-                                <h3 class="font-bold text-brand-900">Petunjuk Pengisian</h3>
-                            </div>
-                            <div id="context-content" class="text-sm text-brand-800 leading-relaxed">
-                                <p class="mb-2 font-medium">Klik pada salah satu kolom formulir untuk melihat panduan spesifik di sini.</p>
-                                <p class="text-xs text-brand-600">Sistem ini membantu memastikan data yang Anda masukkan sesuai dengan standar QC untuk mempercepat analisis kerusakan Videotron/IFP.</p>
-                            </div>
-                        </div>
-
-                        <!-- Mini Summary -->
-                        <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
-                            <h3 class="font-bold text-slate-800 mb-4 text-sm uppercase tracking-wider">Status Antrean QC</h3>
-                            <div class="space-y-4">
-                                <div>
-                                    <div class="flex justify-between text-xs mb-1">
-                                        <span class="text-slate-500">Analisis Lab (Modul)</span>
-                                        <span class="font-bold text-slate-700">12 Kasus</span>
-                                    </div>
-                                    <div class="w-full bg-slate-100 rounded-full h-1.5">
-                                        <div class="bg-blue-500 h-1.5 rounded-full" style="width: 60%"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="flex justify-between text-xs mb-1">
-                                        <span class="text-slate-500">Menunggu Sparepart</span>
-                                        <span class="font-bold text-slate-700">5 Kasus</span>
-                                    </div>
-                                    <div class="w-full bg-slate-100 rounded-full h-1.5">
-                                        <div class="bg-yellow-500 h-1.5 rounded-full" style="width: 40%"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- AI Promo Card -->
-                        <div class="bg-gradient-to-br from-ai-600 to-ai-700 rounded-xl p-6 shadow-md text-white">
-                            <div class="flex items-center mb-2">
-                                <span class="text-xl mr-2">✨</span>
-                                <h3 class="font-bold text-sm uppercase tracking-wider">Fitur Baru: Gemini AI</h3>
-                            </div>
-                            <p class="text-xs text-ai-100 leading-relaxed">
-                                AI kini dioptimalkan untuk diagnosa teknis <strong>Microvision Display</strong>. Gunakan untuk analisis kerusakan modul atau drafting pesan service.
-                            </p>
-                        </div>
+                    <div class="bg-brand-50 p-6 rounded-xl border border-brand-100 sticky top-24">
+                        <h3 class="font-bold text-brand-900 mb-2">💡 Info Penting</h3>
+                        <p class="text-sm text-brand-700 mb-4">Pastikan SN/Batch tercatat untuk klaim garansi. Project/Lokasi membantu teknisi menemukan unit.</p>
                     </div>
                 </div>
-
             </div>
         </section>
-
     </main>
 
-    <!-- JavaScript Logic -->
+    <!-- LOGIC -->
     <script>
-        // --- GEMINI API CONFIGURATION ---
-        const apiKey = "AIzaSyC23J36bwT2FVDmsgQszP4CctH2yBAAE7w"; // Masukkan API Key di sini untuk mengaktifkan AI
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbznqencNpKLLr0X0k30XMUQNeGW2CO4MMho_w4HPuj5caX6NB1EZuOrt8hG1dgTQjFE3A/exec"; // Isi dengan URL Web App Google Script
+        // --- CONFIGURATION ---
+        const apiKey = "AIzaSyC23J36bwT2FVDmsgQszP4CctH2yBAAE7w"; 
+        // ⚠️ GANTI INI DENGAN URL DEPLOYMENT GOOGLE SCRIPT TERBARU ANDA
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzHvMmtWCjLHDUaub9jnf_DTX0EmRWy7l65SLEAVpUee_IC8WRfHnnKkSrDLQjSPk_VUQ/exec"; 
         
-        async function callGeminiAPI(promptText) {
-            if (!apiKey) {
-                alert("API Key tidak ditemukan. Fitur AI tidak dapat berjalan di lingkungan ini tanpa konfigurasi yang tepat.");
-                return null;
-            }
+        // --- AUTH CONFIG ---
+        // Daftar email yang boleh melihat Dashboard (Admin/QC)
+        const ALLOWED_ADMINS = ['admin@microvision.com', 'qc@microvision.com', 'boss@microvision.com'];
+        let isAdmin = false;
+        let currentUser = "";
 
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+        // --- AUTH FUNCTIONS ---
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.toLowerCase();
+            currentUser = email;
             
-            const payload = {
-                contents: [{
-                    parts: [{ text: promptText }]
-                }]
-            };
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('main-nav').classList.remove('hidden');
+            document.getElementById('main-content').classList.remove('hidden');
+            document.getElementById('user-display').innerText = email;
 
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                return data.candidates[0].content.parts[0].text;
-            } catch (error) {
-                console.error("Gemini API Error:", error);
-                alert("Gagal menghubungi AI. Silakan coba lagi nanti.");
-                return null;
-            }
-        }
-
-        // --- AI FEATURES LOGIC ---
-
-        // Feature 1: Root Cause Analysis
-        async function generateAnalysis() {
-            const chronology = document.getElementById('input-chronology').value;
-            const category = document.getElementById('input-category').value;
-            const product = document.getElementById('input-product').value;
-            const outputDiv = document.getElementById('ai-analysis-result');
-            const outputContent = document.getElementById('analysis-content');
-            const btn = document.querySelector("button[onclick='generateAnalysis()']");
-
-            if (!chronology || chronology.length < 10) {
-                alert("Mohon isi kronologi dengan detail (minimal 10 karakter) sebelum meminta analisis AI.");
-                return;
-            }
-
-            // UI Loading State
-            btn.innerHTML = "⏳ Menganalisis...";
-            btn.disabled = true;
-            btn.classList.add('ai-pulse');
-            outputDiv.classList.remove('hidden');
-            outputContent.innerHTML = "<span class='italic text-gray-500'>Sedang menganalisis data kerusakan perangkat display...</span>";
-
-            const prompt = `
-                Acting as a Technical Support Expert for Professional Displays (Videotron, Videowall, IFP). 
-                Analyze this complaint:
-                Product: ${product}
-                Category: ${category}
-                Chronology: "${chronology}"
-
-                Please provide a short technical analysis in Indonesian (Bahasa Indonesia) formatted in Markdown:
-                1. **Diagnosa Teknis (Technical Diagnosis)**: What component is likely failing? (e.g., Receiving Card, Power Supply Unit, LED Module, Flat Cable, HDMI Port).
-                2. **Saran Tindakan Lapangan (Action)**: What should the technician check first? (e.g., Check voltage output, swap ribbon cable, check grounding).
-                
-                Keep it concise and relevant to LED/Display technology.
-            `;
-
-            const result = await callGeminiAPI(prompt);
-
-            if (result) {
-                outputContent.innerHTML = marked.parse(result);
+            // Simple Logic: Check if email contains 'admin' or 'qc' or is in list
+            if (ALLOWED_ADMINS.includes(email) || email.includes('admin') || email.includes('qc')) {
+                isAdmin = true;
+                document.getElementById('nav-dashboard').classList.remove('hidden');
+                switchTab('dashboard'); // Admin masuk ke Dashboard
+                fetchData(); // Load data from Sheet
             } else {
-                outputDiv.classList.add('hidden');
+                isAdmin = false;
+                switchTab('form'); // Sales hanya ke Form
             }
-
-            // Reset UI
-            btn.innerHTML = "✨ Analisis Teknis AI";
-            btn.disabled = false;
-            btn.classList.remove('ai-pulse');
         }
 
-        // Feature 2: Customer Reply Generator
-        async function generateReply() {
-            const customer = document.getElementById('input-customer').value;
-            const request = document.getElementById('input-request').value;
-            const product = document.getElementById('input-product').value;
-            const chronology = document.getElementById('input-chronology').value;
-            const outputDiv = document.getElementById('ai-reply-result');
-            const outputTextarea = document.getElementById('reply-content');
-            const btn = document.querySelector("button[onclick='generateReply()']");
-
-            if (!request) {
-                alert("Mohon pilih jenis 'Permintaan Customer' terlebih dahulu.");
-                return;
-            }
-
-            // UI Loading State
-            btn.innerHTML = "⏳ Menulis...";
-            btn.disabled = true;
-            btn.classList.add('ai-pulse');
-            outputDiv.classList.remove('hidden');
-            outputTextarea.value = "Sedang menyusun draft balasan...";
-
-            const prompt = `
-                Create a polite and professional WhatsApp message draft in Indonesian for a B2B client (Corporate/Government style).
-                
-                Context:
-                - Customer: ${customer || 'Bapak/Ibu'}
-                - Product: ${product}
-                - Issue Reported: ${chronology}
-                - Solution Offered: ${request}
-
-                Guidelines:
-                - Apologize for the technical issue with the display unit.
-                - State that our technical team has received the ticket.
-                - Explain the next step based on the solution (e.g., "Technician will visit", "Sparepart will be sent").
-                - Maintain a professional image for high-end electronics support.
-                - No placeholders, just the message body.
-            `;
-
-            const result = await callGeminiAPI(prompt);
-
-            if (result) {
-                outputTextarea.value = result.trim();
-            } else {
-                outputDiv.classList.add('hidden');
-            }
-
-             // Reset UI
-             btn.innerHTML = "✨ Buat Draft Balasan WA";
-             btn.disabled = false;
-             btn.classList.remove('ai-pulse');
+        function logout() {
+            location.reload();
         }
 
-        function copyToClipboard() {
-            const copyText = document.getElementById("reply-content");
-            copyText.select();
-            copyText.setSelectionRange(0, 99999); 
-            navigator.clipboard.writeText(copyText.value);
-            alert("Teks berhasil disalin!");
-        }
-
-        // --- DATA & STATE MANAGEMENT (Updated for Display Tech) ---
-        const state = {
-            totalReports: 0,
-            avgUrgency: 0,
-            categories: {
-                'Dead Pixel/Lampu Mati': 0,
-                'Modul Error/Blok': 0,
-                'Power Supply/Mati Total': 0,
-                'Receiving Card/Signal': 0,
-                'Fisik Layar Pecah': 0,
-                'Software/Config': 0,
-                'Lainnya': 0
-            },
-            actions: {
-                'Service On-site': 0,
-                'Sparepart Replacement': 0,
-                'Unit Replacement': 0,
-                'Remote Config': 0
-            },
-            urgencyHistory: [0, 0, 0, 0, 0, 0] 
-        };
-
-        const contextData = {
-            'default': 'Klik pada salah satu kolom formulir untuk melihat panduan spesifik di sini.',
-            'identity': '<strong>Identitas:</strong> Pastikan nama PIC Project atau User tercatat jelas untuk koordinasi jadwal kunjungan teknisi.',
-            'po_info': '<strong>Nomor Referensi:</strong> Masukkan Nomor Kontrak atau PO. Ini penting untuk mengecek masa garansi Videotron/IFP.',
-            'product_name': '<strong>Tipe Produk:</strong> Spesifikkan Pitch (P) untuk Videotron (cth: P3.9 Outdoor) atau ukuran Inch untuk IFP (cth: 86 Inch).',
-            'batch_code': '<strong>⚠️ SANGAT PENTING:</strong> Untuk Videotron, catat Kode Batch Modul (belakang modul) agar warna LED belang bisa dihindari saat penggantian.',
-            'qty': '<strong>Kuantitas:</strong> Berapa kabinet/modul yang mati? Atau berapa unit IFP yang bermasalah dalam satu sekolah/kantor?',
-            'category': '<strong>Diagnosa Awal:</strong><br>- <em>Dead Pixel:</em> Lampu titik mati<br>- <em>Blok Error:</em> Satu kotak modul warna ngaco (biasanya kabel flat)<br>- <em>No Signal:</em> Cek Receiving Card/Kabel LAN.',
-            'chronology': '<strong>Kronologi:</strong> Jelaskan kondisi instalasi. Apakah listrik stabil? Apakah ada petir? Apakah grounding terpasang dengan baik?',
-            'sample': '<strong>Barang Bukti:</strong> Modul rusak harus dikembalikan ke gudang untuk klaim garansi ke pabrik (RMA).',
-            'request': '<strong>Solusi:</strong> Apakah user minta teknisi datang (On-site) atau cukup dikirim sparepart (Modul/PSU) untuk dipasang sendiri?',
-            'urgency': '<strong>Skala Prioritas:</strong><br>4-5: <strong>URGENT</strong> (Acara sedang berlangsung, layar mati total, atau VIP User).'
-        };
-
-        let categoryChartInst = null;
-        let actionChartInst = null;
-        let urgencyChartInst = null;
-
-        document.addEventListener('DOMContentLoaded', () => {
-            initCharts();
-        });
-
-        function initCharts() {
-            // Category Chart
-            const ctxCat = document.getElementById('categoryChart').getContext('2d');
-            categoryChartInst = new Chart(ctxCat, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(state.categories),
-                    datasets: [{
-                        label: 'Jumlah Kasus',
-                        data: Object.values(state.categories),
-                        backgroundColor: '#0ea5e9',
-                        borderRadius: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: { y: { beginAtZero: true } },
-                    plugins: { legend: { display: false } }
-                }
-            });
-
-            // Action Chart
-            const ctxAct = document.getElementById('actionChart').getContext('2d');
-            actionChartInst = new Chart(ctxAct, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(state.actions),
-                    datasets: [{
-                        data: Object.values(state.actions),
-                        backgroundColor: ['#0ea5e9', '#ef4444', '#eab308', '#64748b'],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { position: 'right' } }
-                }
-            });
-
-            // Urgency Chart
-            const ctxUrg = document.getElementById('urgencyChart').getContext('2d');
-            urgencyChartInst = new Chart(ctxUrg, {
-                type: 'line',
-                data: {
-                    labels: ['W-5', 'W-4', 'W-3', 'W-2', 'W-1', 'Current'],
-                    datasets: [{
-                        label: 'Skor Urgensi',
-                        data: state.urgencyHistory,
-                        borderColor: '#f97316',
-                        backgroundColor: 'rgba(249, 115, 22, 0.1)',
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: { y: { min: 0, max: 5 } }
-                }
-            });
-        }
-
+        // --- NAVIGATION ---
         function switchTab(tabName) {
             const dashboard = document.getElementById('dashboard-view');
             const form = document.getElementById('form-view');
@@ -709,40 +340,134 @@
             const btnForm = document.getElementById('nav-form');
 
             if (tabName === 'dashboard') {
+                if (!isAdmin) return; // Prevent access logic
                 dashboard.classList.remove('hidden');
                 form.classList.add('hidden');
-                btnDash.classList.add('bg-brand-50', 'text-brand-600', 'border', 'border-brand-100', 'shadow-sm');
-                btnDash.classList.remove('text-slate-600', 'hover:bg-slate-50');
-                btnForm.classList.remove('bg-brand-50', 'text-brand-600', 'border', 'border-brand-100', 'shadow-sm');
-                btnForm.classList.add('text-slate-600', 'hover:bg-slate-50');
+                btnDash.className = "px-4 py-2 rounded-md text-sm font-medium bg-brand-50 text-brand-600 border border-brand-100 transition-colors shadow-sm";
+                btnForm.className = "px-4 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors";
             } else {
                 dashboard.classList.add('hidden');
                 form.classList.remove('hidden');
-                btnForm.classList.add('bg-brand-50', 'text-brand-600', 'border', 'border-brand-100', 'shadow-sm');
-                btnForm.classList.remove('text-slate-600', 'hover:bg-slate-50');
-                btnDash.classList.remove('bg-brand-50', 'text-brand-600', 'border', 'border-brand-100', 'shadow-sm');
-                btnDash.classList.add('text-slate-600', 'hover:bg-slate-50');
+                btnForm.className = "px-4 py-2 rounded-md text-sm font-medium bg-brand-50 text-brand-600 border border-brand-100 transition-colors shadow-sm";
+                btnDash.className = "px-4 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors";
+                // Set default date
+                document.getElementById('input-date').valueAsDate = new Date();
             }
         }
 
-        function updateContext(key) {
-            const contentDiv = document.getElementById('context-content');
-            const text = contextData[key] || contextData['default'];
-            contentDiv.style.opacity = 0;
-            setTimeout(() => {
-                contentDiv.innerHTML = text;
-                contentDiv.style.opacity = 1;
-            }, 150);
+        // --- DATA MANAGEMENT (READ & WRITE) ---
+        let allReports = [];
+
+        // 1. FETCH DATA (READ)
+        async function fetchData() {
+            if (!GOOGLE_SCRIPT_URL) return;
+            
+            const tableBody = document.getElementById('case-table-body');
+            tableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center">Sedang mengambil data dari Google Sheet...</td></tr>';
+
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL); // Default GET
+                const data = await response.json();
+                allReports = data;
+                
+                renderDashboard(allReports);
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                tableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-red-500">Gagal mengambil data. Cek koneksi atau URL Script.</td></tr>';
+            }
         }
 
-        function updateUrgencyLabel(val) {
-            document.getElementById('urgency-display').innerText = `Level: ${val}`;
+        // 2. RENDER DASHBOARD & LIST
+        function renderDashboard(data) {
+            // Metrics
+            document.getElementById('total-reports').innerText = data.length;
+            const pending = data.filter(r => r.Status !== 'Closed').length;
+            document.getElementById('pending-reports').innerText = pending;
+            document.getElementById('closed-reports').innerText = data.length - pending;
+
+            // Table List (Sorted by Date Descending)
+            const tableBody = document.getElementById('case-table-body');
+            tableBody.innerHTML = '';
+            
+            // Sort: Terbaru di atas
+            const sortedData = [...data].sort((a, b) => new Date(b.Timestamp) - new Date(a.Timestamp));
+
+            sortedData.forEach(row => {
+                // Determine ID key (Sheet headers might vary case)
+                const id = row.ID || row.id || row['ID (Baru)'] || row[Object.keys(row)[0]]; 
+                const statusColor = row.Status === 'Closed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
+                
+                // Format Date nicely
+                let dateStr = row.Tanggal || row.Date;
+                if (dateStr && new Date(dateStr) !== "Invalid Date") {
+                    dateStr = new Date(dateStr).toLocaleDateString('id-ID');
+                }
+
+                const tr = document.createElement('tr');
+                tr.className = "bg-white border-b hover:bg-slate-50";
+                tr.innerHTML = `
+                    <td class="px-6 py-4">${dateStr}</td>
+                    <td class="px-6 py-4 font-medium text-slate-900">${row.Sales}</td>
+                    <td class="px-6 py-4">${row.Project || row['Total Qty'] || '-'}</td>
+                    <td class="px-6 py-4">
+                        <span class="font-bold block text-xs uppercase text-slate-500">${row.Kategori}</span>
+                        ${row.Produk}
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="${statusColor} text-xs font-medium px-2.5 py-0.5 rounded">${row.Status || 'Pending'}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        ${row.Status !== 'Closed' ? 
+                            `<button onclick="updateStatus('${id}', 'Closed')" class="text-xs bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600">Close Case</button>` : 
+                            `<button onclick="updateStatus('${id}', 'Pending')" class="text-xs bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">Re-Open</button>`
+                        }
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+
+            updateCharts(data);
         }
 
+        // 3. UPDATE STATUS (EDIT)
+        async function updateStatus(id, newStatus) {
+            if(!confirm(`Ubah status kasus ini menjadi ${newStatus}?`)) return;
+
+            const payload = {
+                action: 'update_status',
+                id: id,
+                status: newStatus
+            };
+
+            // Optimistic UI Update (Update tampilan dulu biar cepat)
+            const row = allReports.find(r => (r.ID || r[Object.keys(r)[0]]) == id);
+            if(row) {
+                row.Status = newStatus;
+                renderDashboard(allReports);
+            }
+
+            // Send to Backend
+            try {
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify(payload)
+                });
+                // Fetch real data again after delay
+                setTimeout(fetchData, 2000); 
+            } catch(e) {
+                alert("Gagal update status di server");
+            }
+        }
+
+        // 4. SUBMIT FORM (CREATE)
         function handleFormSubmit(event) {
             event.preventDefault();
-            
-            // Collect Form Data
+            const btn = event.target.querySelector('button[type="submit"]');
+            btn.innerText = "Mengirim...";
+            btn.disabled = true;
+
             const formData = {
                 sales: document.getElementById('input-sales').value,
                 date: document.getElementById('input-date').value,
@@ -750,89 +475,138 @@
                 po: document.getElementById('input-po').value,
                 product: document.getElementById('input-product').value,
                 batch: document.getElementById('input-batch').value,
-                qtyTotal: document.getElementById('input-qty-total').value,
+                project: document.getElementById('input-project').value, // NEW FIELD
                 qtyBad: document.getElementById('input-qty-bad').value,
                 category: document.getElementById('input-category').value,
                 chronology: document.getElementById('input-chronology').value,
-                status: document.getElementById('input-sample-status').value,
                 request: document.getElementById('input-request').value,
-                urgency: parseInt(document.getElementById('input-urgency').value)
+                urgency: document.getElementById('input-urgency').value,
+                status: 'Pending'
             };
 
-            const category = formData.category;
-            const request = formData.request;
-            const urgency = formData.urgency;
+            // Payload structure for GAS
+            const payload = {
+                action: 'insert',
+                data: formData
+            };
 
-            if(!category || !request) {
-                alert("Mohon lengkapi semua data wajib.");
-                return;
-            }
-
-            const btn = event.target.querySelector('button[type="submit"]');
-            const originalText = btn.innerText;
-            btn.innerText = "Mengirim...";
-            btn.disabled = true;
-
-            // Submit to Google Sheets (if URL is present)
             if (GOOGLE_SCRIPT_URL) {
                 fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
-                    mode: 'no-cors', // Important for Google Apps Script Web App
-                    headers: {
-                        'Content-Type': 'text/plain' // CHANGED FROM application/json to text/plain
-                    },
-                    body: JSON.stringify(formData)
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify(payload)
                 })
-                .then(response => {
-                    console.log("Data sent to Google Sheet");
+                .then(() => {
+                    alert("Laporan Terkirim & Tersimpan!");
+                    event.target.reset();
+                    btn.innerText = "Kirim Laporan";
+                    btn.disabled = false;
+                    if(isAdmin) {
+                        switchTab('dashboard');
+                        setTimeout(fetchData, 1500); // Refresh list
+                    }
                 })
-                .catch(error => {
-                    console.error("Error sending to Google Sheet:", error);
-                    alert("Gagal menyimpan ke Google Sheet (Cek Konsol)");
+                .catch(err => {
+                    alert("Error kirim data");
+                    btn.disabled = false;
                 });
-            } else {
-                console.warn("Google Script URL not set. Skipping Sheet submission.");
             }
-
-            // Simulate Local Update (UI Feedback)
-            setTimeout(() => {
-                state.totalReports += 1;
-                document.getElementById('total-reports').innerText = state.totalReports;
-
-                if(state.categories[category] !== undefined) state.categories[category] += 1;
-                if(state.actions[request] !== undefined) state.actions[request] += 1;
-
-                state.urgencyHistory.shift();
-                state.urgencyHistory.push(urgency);
-                
-                const sum = state.urgencyHistory.reduce((a, b) => a + b, 0);
-                const avg = (sum / state.urgencyHistory.length).toFixed(1);
-                document.getElementById('avg-urgency-display').innerText = avg;
-
-                updateCharts();
-
-                // Clear AI results too
-                document.getElementById('ai-analysis-result').classList.add('hidden');
-                document.getElementById('ai-reply-result').classList.add('hidden');
-
-                event.target.reset();
-                btn.innerText = originalText;
-                btn.disabled = false;
-                
-                alert("Laporan Berhasil Dikirim ke QC" + (GOOGLE_SCRIPT_URL ? " & Google Sheet!" : "!"));
-                switchTab('dashboard');
-                
-            }, 1000);
         }
 
-        function updateCharts() {
-            categoryChartInst.data.datasets[0].data = Object.values(state.categories);
-            categoryChartInst.update();
-            actionChartInst.data.datasets[0].data = Object.values(state.actions);
-            actionChartInst.update();
-            urgencyChartInst.data.datasets[0].data = state.urgencyHistory;
-            urgencyChartInst.update();
+        // --- CHARTS ---
+        let catChart = null;
+        let urgChart = null;
+
+        function updateCharts(data) {
+            // Process Data for Charts
+            const catCounts = {};
+            const urgCounts = [0,0,0,0,0]; // 1-5
+
+            data.forEach(r => {
+                // Category
+                const cat = r.Kategori || r.category;
+                catCounts[cat] = (catCounts[cat] || 0) + 1;
+                
+                // Urgency (Asumsi kolom Urgensi berisi angka)
+                const urg = parseInt(r.Urgensi || r.urgency);
+                if(urg >=1 && urg <=5) urgCounts[urg-1]++;
+            });
+
+            // Render Category Chart
+            const ctxCat = document.getElementById('categoryChart').getContext('2d');
+            if(catChart) catChart.destroy();
+            catChart = new Chart(ctxCat, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(catCounts),
+                    datasets: [{
+                        label: 'Kasus',
+                        data: Object.values(catCounts),
+                        backgroundColor: '#0ea5e9',
+                        borderRadius: 4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            // Render Urgency Chart
+            const ctxUrg = document.getElementById('urgencyChart').getContext('2d');
+            if(urgChart) urgChart.destroy();
+            urgChart = new Chart(ctxUrg, {
+                type: 'line',
+                data: {
+                    labels: ['Level 1', 'Level 2', 'Level 3', 'Level 4', 'Level 5'],
+                    datasets: [{
+                        label: 'Jumlah Kasus per Level',
+                        data: urgCounts,
+                        borderColor: '#f97316',
+                        fill: true,
+                        backgroundColor: 'rgba(249, 115, 22, 0.1)'
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
         }
+
+        // --- AI FEATURES (SIMPLIFIED) ---
+        async function callGeminiAPI(prompt) {
+            if (!apiKey) return alert("API Key Missing");
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            try {
+                const res = await fetch(url, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) });
+                const data = await res.json();
+                return data.candidates[0].content.parts[0].text;
+            } catch (e) { alert("AI Error"); return null; }
+        }
+
+        async function generateAnalysis() {
+            const txt = document.getElementById('input-chronology').value;
+            if(txt.length < 5) return alert("Isi kronologi dulu");
+            const res = await callGeminiAPI("Analisis teknis singkat untuk masalah videotron/display ini: " + txt);
+            if(res) {
+                const div = document.getElementById('ai-analysis-result');
+                div.classList.remove('hidden');
+                div.innerText = res;
+            }
+        }
+
+        async function generateReply() {
+            const req = document.getElementById('input-request').value;
+            if(!req) return alert("Pilih request dulu");
+            const res = await callGeminiAPI("Buat draft WA sopan ke customer B2B mengenai tindak lanjut: " + req);
+            if(res) {
+                const div = document.getElementById('ai-reply-result');
+                div.classList.remove('hidden');
+                document.getElementById('reply-content').value = res;
+            }
+        }
+
+        // Range Slider UI
+        document.getElementById('input-urgency').addEventListener('input', function(e) {
+            document.getElementById('urgency-val').innerText = e.target.value;
+        });
+
     </script>
 </body>
 </html>
