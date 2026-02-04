@@ -444,7 +444,7 @@
     <script>
         // --- GEMINI API CONFIGURATION ---
         const apiKey = "AIzaSyC23J36bwT2FVDmsgQszP4CctH2yBAAE7w"; // Masukkan API Key di sini untuk mengaktifkan AI
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwuXCMhiMFj3vJHUTy5n92Bz2bcwL-VYsS2-AN6m5icfzXKcdOX0oQlJe6QnJ0FCHwZPA/exec"; // Isi dengan URL Web App Google Script
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbznqencNpKLLr0X0k30XMUQNeGW2CO4MMho_w4HPuj5caX6NB1EZuOrt8hG1dgTQjFE3A/exec"; // Isi dengan URL Web App Google Script
         
         async function callGeminiAPI(promptText) {
             if (!apiKey) {
@@ -779,7 +779,7 @@
                     method: 'POST',
                     mode: 'no-cors', // Important for Google Apps Script Web App
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'text/plain' // CHANGED FROM application/json to text/plain
                     },
                     body: JSON.stringify(formData)
                 })
