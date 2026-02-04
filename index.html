@@ -127,10 +127,10 @@
                 <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm transition hover:shadow-md">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Laporan</h3>
-                        <span class="text-3xl font-bold text-brand-600" id="total-reports">24</span>
+                        <span class="text-3xl font-bold text-brand-600" id="total-reports">0</span>
                     </div>
                     <div class="w-full bg-slate-100 rounded-full h-2">
-                        <div class="bg-brand-500 h-2 rounded-full" style="width: 70%"></div>
+                        <div class="bg-brand-500 h-2 rounded-full" style="width: 0%"></div>
                     </div>
                     <p class="text-xs text-slate-400 mt-2">Bulan Ini</p>
                 </div>
@@ -138,10 +138,10 @@
                  <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm transition hover:shadow-md">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Rata-rata Urgensi</h3>
-                        <span class="text-3xl font-bold text-orange-500" id="avg-urgency-display">3.2</span>
+                        <span class="text-3xl font-bold text-orange-500" id="avg-urgency-display">0.0</span>
                     </div>
                     <div class="w-full bg-slate-100 rounded-full h-2">
-                        <div class="bg-orange-500 h-2 rounded-full" style="width: 64%"></div>
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 0%"></div>
                     </div>
                     <p class="text-xs text-slate-400 mt-2">Skala 1-5</p>
                 </div>
@@ -149,10 +149,10 @@
                  <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm transition hover:shadow-md">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Status Close Case</h3>
-                        <span class="text-3xl font-bold text-green-600">85%</span>
+                        <span class="text-3xl font-bold text-green-600">0%</span>
                     </div>
                     <div class="w-full bg-slate-100 rounded-full h-2">
-                        <div class="bg-green-500 h-2 rounded-full" style="width: 85%"></div>
+                        <div class="bg-green-500 h-2 rounded-full" style="width: 0%"></div>
                     </div>
                     <p class="text-xs text-slate-400 mt-2">Target: 90%</p>
                 </div>
@@ -596,24 +596,24 @@
 
         // --- DATA & STATE MANAGEMENT (Updated for Display Tech) ---
         const state = {
-            totalReports: 24,
-            avgUrgency: 3.2,
+            totalReports: 0,
+            avgUrgency: 0,
             categories: {
-                'Dead Pixel/Lampu Mati': 8,
-                'Modul Error/Blok': 6,
-                'Power Supply/Mati Total': 4,
-                'Receiving Card/Signal': 3,
-                'Fisik Layar Pecah': 1,
-                'Software/Config': 2,
+                'Dead Pixel/Lampu Mati': 0,
+                'Modul Error/Blok': 0,
+                'Power Supply/Mati Total': 0,
+                'Receiving Card/Signal': 0,
+                'Fisik Layar Pecah': 0,
+                'Software/Config': 0,
                 'Lainnya': 0
             },
             actions: {
-                'Service On-site': 10,
-                'Sparepart Replacement': 8,
-                'Unit Replacement': 2,
-                'Remote Config': 4
+                'Service On-site': 0,
+                'Sparepart Replacement': 0,
+                'Unit Replacement': 0,
+                'Remote Config': 0
             },
-            urgencyHistory: [2.5, 2.8, 3.0, 4.2, 3.5, 3.2] 
+            urgencyHistory: [0, 0, 0, 0, 0, 0] 
         };
 
         const contextData = {
