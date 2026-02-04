@@ -24,7 +24,7 @@
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
-                        brand: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 800: '#075985', 900: '#0c4a6e' },
+                        brand: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 800: '#075985', 900: '#0c4a6e' }, // 900 is Dark Blue
                         ai: { 50: '#f5f3ff', 100: '#ede9fe', 600: '#7c3aed', 700: '#6d28d9' }
                     }
                 }
@@ -41,29 +41,36 @@
         @media (min-width: 768px) { .chart-container { height: 350px; } }
         .fade-in { animation: fadeIn 0.4s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .ai-pulse { animation: pulse-purple 2s infinite; }
-        @keyframes pulse-purple { 0% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(124, 58, 237, 0); } 100% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0); } }
         
         /* Login Overlay */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(255,255,255,0.95); z-index: 9999;
             display: flex; align-items: center; justify-content: center;
+            backdrop-filter: blur(5px);
         }
+        
+        /* Status Badge Colors */
+        .status-open { @apply bg-yellow-100 text-yellow-800 border border-yellow-200; }
+        .status-closed { @apply bg-green-100 text-green-800 border border-green-200; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans leading-relaxed overflow-x-hidden">
 
-    <!-- LOGIN OVERLAY -->
+    <!-- 1. LOGIN SYSTEM -->
     <div id="login-overlay">
-        <div class="bg-white p-8 rounded-2xl shadow-xl border border-slate-200 max-w-md w-full text-center">
-            <div class="bg-brand-600 text-white w-16 h-16 rounded-full flex items-center justify-center text-3xl font-bold mx-auto mb-6">M</div>
-            <h2 class="text-2xl font-bold text-slate-800 mb-2">Selamat Datang</h2>
-            <p class="text-slate-500 mb-6 text-sm">Silakan masukkan email kerja Anda untuk mengakses sistem.</p>
+        <div class="bg-white p-8 rounded-2xl shadow-2xl border border-slate-100 max-w-sm w-full text-center">
+            <!-- LOGO TEXT ONLY - DARK BLUE ITALIC -->
+            <h1 class="text-4xl font-bold text-brand-900 italic mb-4 tracking-wide">Microvision</h1>
+            
+            <h2 class="text-lg font-semibold text-slate-600 mb-6 uppercase tracking-wider">Pengaduan Pelanggan</h2>
+            
             <form onsubmit="handleLogin(event)" class="space-y-4">
-                <input type="email" id="login-email" required placeholder="nama@microvision.com" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none">
-                <button type="submit" class="w-full bg-brand-600 text-white py-3 rounded-lg font-bold hover:bg-brand-700 transition">Masuk Sistem</button>
+                <!-- Placeholder removed as requested -->
+                <input type="email" id="login-email" required class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none text-sm transition text-center" placeholder="Masukkan Email Anda">
+                <button type="submit" class="w-full bg-brand-900 text-white py-3 rounded-lg font-bold hover:bg-brand-800 transition shadow-md text-sm">Masuk Sistem</button>
             </form>
+            <p class="mt-4 text-xs text-slate-400">Admin access required for Dashboard</p>
         </div>
     </div>
 
@@ -72,11 +79,8 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center gap-3">
-                    <div class="bg-brand-600 text-white p-2 rounded-lg font-bold text-xl tracking-tighter">M</div>
-                    <div>
-                        <h1 class="font-bold text-slate-900 text-xl leading-tight italic tracking-wide">Microvision</h1>
-                        <p class="text-xs text-slate-500 tracking-wider">Realizing Your full Idea</p>
-                    </div>
+                    <!-- NAVBAR LOGO UPDATED -->
+                    <h1 class="font-bold text-brand-900 text-2xl leading-tight italic tracking-wide">Microvision</h1>
                 </div>
                 <div class="flex items-center space-x-2 md:space-x-4">
                     <!-- Dashboard Button (Hidden for non-admins) -->
@@ -86,9 +90,14 @@
                     <button onclick="switchTab('form')" id="nav-form" class="px-4 py-2 rounded-md text-sm font-medium bg-brand-50 text-brand-600 border border-brand-100 transition-colors shadow-sm">
                         Laporan Baru
                     </button>
-                    <div class="text-xs text-right border-l pl-3 ml-2">
-                        <span class="block font-bold text-slate-700" id="user-display">User</span>
-                        <span class="text-slate-400 cursor-pointer hover:text-red-500" onclick="logout()">Logout</span>
+                    <div class="flex items-center border-l pl-4 ml-2 gap-3">
+                        <div class="text-right hidden md:block">
+                            <span class="block text-xs font-bold text-slate-700" id="user-display">User</span>
+                            <span class="block text-[10px] text-slate-400" id="role-display">Sales</span>
+                        </div>
+                        <button onclick="logout()" class="text-slate-400 hover:text-red-500 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -99,51 +108,69 @@
 
         <!-- DASHBOARD VIEW -->
         <section id="dashboard-view" class="hidden space-y-8 fade-in">
-            <div class="flex justify-between items-center bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+            <div class="flex justify-between items-end bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
                 <div>
                     <h2 class="text-2xl font-bold text-slate-800">Quality Control Dashboard</h2>
-                    <p class="text-slate-600 text-sm">Data Real-time dari Google Sheets.</p>
+                    <p class="text-slate-600 text-sm mt-1">Data Real-time (Static & Persistent) dari Google Sheets.</p>
                 </div>
-                <button onclick="fetchData()" class="text-sm bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-2 rounded-lg transition flex items-center gap-2">
+                <button onclick="fetchData()" class="text-xs font-bold bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 px-4 py-2 rounded-lg transition flex items-center gap-2">
                     🔄 Refresh Data
                 </button>
             </div>
 
             <!-- Key Metrics -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                    <h3 class="text-xs font-bold text-slate-500 uppercase">Total Kasus</h3>
-                    <span class="text-3xl font-bold text-brand-600" id="total-reports">Loading...</span>
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group">
+                    <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition text-brand-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    </div>
+                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Kasus</h3>
+                    <span class="text-3xl font-bold text-brand-600 mt-2 block" id="total-reports">0</span>
+                    <div class="w-full bg-slate-100 rounded-full h-1 mt-4"><div class="bg-brand-500 h-1 rounded-full" style="width: 100%"></div></div>
                 </div>
-                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                    <h3 class="text-xs font-bold text-slate-500 uppercase">Kasus Pending/Open</h3>
-                    <span class="text-3xl font-bold text-orange-500" id="pending-reports">Loading...</span>
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group">
+                    <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition text-orange-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                    </div>
+                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Kasus Open (Pending)</h3>
+                    <span class="text-3xl font-bold text-orange-500 mt-2 block" id="pending-reports">0</span>
+                    <div class="w-full bg-slate-100 rounded-full h-1 mt-4"><div id="bar-pending" class="bg-orange-500 h-1 rounded-full" style="width: 0%"></div></div>
                 </div>
-                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                    <h3 class="text-xs font-bold text-slate-500 uppercase">Kasus Closed</h3>
-                    <span class="text-3xl font-bold text-green-600" id="closed-reports">Loading...</span>
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group">
+                    <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition text-green-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    </div>
+                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Kasus Closed</h3>
+                    <span class="text-3xl font-bold text-green-600 mt-2 block" id="closed-reports">0</span>
+                    <div class="w-full bg-slate-100 rounded-full h-1 mt-4"><div id="bar-closed" class="bg-green-500 h-1 rounded-full" style="width: 0%"></div></div>
                 </div>
             </div>
 
-            <!-- Case Queue List (NEW FEATURE) -->
+            <!-- 5. QUEUE LIST TABLE (SORTABLE) -->
             <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                <div class="p-6 border-b border-slate-100">
-                    <h3 class="font-bold text-lg text-slate-800">📋 Antrian Kasus (Live Queue)</h3>
+                <div class="p-6 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h3 class="font-bold text-lg text-slate-800">📋 Antrian Kasus (Live Queue)</h3>
+                        <p class="text-xs text-slate-500">Menampilkan daftar kasus diurutkan dari terbaru.</p>
+                    </div>
+                    <div class="text-xs px-3 py-1 bg-blue-50 text-blue-700 rounded-full border border-blue-100">
+                        Auto-sync enabled
+                    </div>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm text-left text-slate-600">
-                        <thead class="text-xs text-slate-700 uppercase bg-slate-50">
+                        <thead class="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-200">
                             <tr>
-                                <th class="px-6 py-3">Tanggal</th>
-                                <th class="px-6 py-3">Sales / PIC</th>
-                                <th class="px-6 py-3">Project / Lokasi</th>
-                                <th class="px-6 py-3">Masalah</th>
-                                <th class="px-6 py-3">Status</th>
-                                <th class="px-6 py-3">Aksi</th>
+                                <th class="px-6 py-4 font-bold">Tanggal</th>
+                                <th class="px-6 py-4 font-bold">Project / Lokasi</th>
+                                <th class="px-6 py-4 font-bold">Sales PIC</th>
+                                <th class="px-6 py-4 font-bold">Masalah</th>
+                                <th class="px-6 py-4 font-bold text-center">Status</th>
+                                <th class="px-6 py-4 font-bold text-center">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody id="case-table-body">
-                            <tr><td colspan="6" class="px-6 py-4 text-center">Memuat data...</td></tr>
+                        <tbody id="case-table-body" class="divide-y divide-slate-100">
+                            <tr><td colspan="6" class="px-6 py-8 text-center text-slate-400 italic">Sedang mengambil data dari server...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -177,19 +204,19 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Sales / PIC *</label>
-                                        <input type="text" id="input-sales" required class="w-full rounded border-slate-300 p-2.5 border">
+                                        <input type="text" id="input-sales" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500 focus:border-brand-500">
                                     </div>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-1">Tanggal Laporan *</label>
-                                        <input type="date" id="input-date" required class="w-full rounded border-slate-300 p-2.5 border">
+                                        <input type="date" id="input-date" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500 focus:border-brand-500">
                                     </div>
                                     <div class="md:col-span-2">
                                         <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Customer / PT *</label>
-                                        <input type="text" id="input-customer" required class="w-full rounded border-slate-300 p-2.5 border">
+                                        <input type="text" id="input-customer" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500 focus:border-brand-500">
                                     </div>
                                     <div class="md:col-span-2">
                                         <label class="block text-sm font-semibold text-slate-700 mb-1">No PO / Kontrak *</label>
-                                        <input type="text" id="input-po" required class="w-full rounded border-slate-300 p-2.5 border">
+                                        <input type="text" id="input-po" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500 focus:border-brand-500">
                                     </div>
                                 </div>
                             </div>
@@ -200,20 +227,20 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <div class="md:col-span-2">
                                         <label class="block text-sm font-semibold text-slate-700 mb-1">Tipe Produk / Model *</label>
-                                        <input type="text" id="input-product" required class="w-full rounded border-slate-300 p-2.5 border" placeholder="Ex: Videotron P2.5 Indoor">
+                                        <input type="text" id="input-product" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500 focus:border-brand-500" placeholder="Ex: Videotron P2.5 Indoor">
                                     </div>
-                                    <!-- CHANGE 4: Total Unit -> Project -->
+                                    <!-- 4. CHANGE: Field Project -->
                                     <div class="md:col-span-2">
                                         <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Project / Lokasi *</label>
-                                        <input type="text" id="input-project" required class="w-full rounded border-slate-300 p-2.5 border" placeholder="Ex: Ruang Rapat Lt. 3">
+                                        <input type="text" id="input-project" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500 focus:border-brand-500" placeholder="Ex: Ruang Rapat Lt. 3">
                                     </div>
                                     <div class="md:col-span-2">
                                         <label class="block text-sm font-semibold text-slate-700 mb-1">Serial Number / Batch Modul</label>
-                                        <input type="text" id="input-batch" class="w-full rounded border-slate-300 p-2.5 border">
+                                        <input type="text" id="input-batch" class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500 focus:border-brand-500">
                                     </div>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-1">Jml. Unit Bermasalah *</label>
-                                        <input type="number" id="input-qty-bad" required class="w-full rounded border-slate-300 p-2.5 border">
+                                        <input type="number" id="input-qty-bad" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500 focus:border-brand-500">
                                     </div>
                                 </div>
                             </div>
@@ -224,7 +251,7 @@
                                 <div class="space-y-5">
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-1">Kategori Masalah *</label>
-                                        <select id="input-category" required class="w-full rounded border-slate-300 p-2.5 border bg-white">
+                                        <select id="input-category" required class="w-full rounded border-slate-300 p-2.5 border bg-white focus:ring-brand-500 focus:border-brand-500">
                                             <option value="">-- Pilih --</option>
                                             <option value="Dead Pixel">Dead Pixel / Lampu Mati</option>
                                             <option value="Modul Error">Modul Error / Blok Warna</option>
@@ -238,9 +265,9 @@
                                     <div>
                                         <div class="flex justify-between mb-1">
                                             <label class="block text-sm font-semibold text-slate-700">Kronologi *</label>
-                                            <button type="button" onclick="generateAnalysis()" class="text-xs bg-ai-100 text-ai-700 px-2 rounded hover:bg-ai-600 hover:text-white transition">✨ AI Analysis</button>
+                                            <button type="button" onclick="generateAnalysis()" class="text-xs bg-ai-100 text-ai-700 px-2 rounded hover:bg-ai-600 hover:text-white transition border border-ai-200">✨ AI Analysis</button>
                                         </div>
-                                        <textarea id="input-chronology" required rows="4" class="w-full rounded border-slate-300 p-2.5 border"></textarea>
+                                        <textarea id="input-chronology" required rows="4" class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500 focus:border-brand-500"></textarea>
                                         <div id="ai-analysis-result" class="hidden mt-2 bg-white border border-ai-600 rounded p-3 text-sm text-slate-700"></div>
                                     </div>
                                 </div>
@@ -253,29 +280,29 @@
                                     <div class="md:col-span-2">
                                         <div class="flex justify-between mb-1">
                                             <label class="block text-sm font-semibold text-slate-700">Request Customer *</label>
-                                            <button type="button" onclick="generateReply()" class="text-xs bg-ai-100 text-ai-700 px-2 rounded hover:bg-ai-600 hover:text-white transition">✨ Draft WA</button>
+                                            <button type="button" onclick="generateReply()" class="text-xs bg-ai-100 text-ai-700 px-2 rounded hover:bg-ai-600 hover:text-white transition border border-ai-200">✨ Draft WA</button>
                                         </div>
-                                        <select id="input-request" required class="w-full rounded border-slate-300 p-2.5 border bg-white mb-2">
+                                        <select id="input-request" required class="w-full rounded border-slate-300 p-2.5 border bg-white mb-2 focus:ring-brand-500 focus:border-brand-500">
                                             <option value="Service On-site">Kunjungan Teknisi</option>
                                             <option value="Sparepart">Kirim Sparepart</option>
                                             <option value="Replace Unit">Ganti Unit Baru</option>
                                             <option value="Remote">Bantuan Remote</option>
                                         </select>
                                         <div id="ai-reply-result" class="hidden bg-green-50 border border-green-200 rounded p-3">
-                                            <textarea id="reply-content" rows="4" class="w-full text-xs bg-transparent border-none resize-none" readonly></textarea>
+                                            <textarea id="reply-content" rows="4" class="w-full text-xs bg-transparent border-none resize-none font-mono text-slate-600" readonly></textarea>
                                         </div>
                                     </div>
                                     <div class="md:col-span-2">
                                         <label class="block text-sm font-semibold text-slate-700 mb-1">Urgensi (1-5)</label>
                                         <input id="input-urgency" type="range" min="1" max="5" value="3" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-600">
-                                        <div class="text-center text-xs font-bold text-brand-700">Level: <span id="urgency-val">3</span></div>
+                                        <div class="text-center text-xs font-bold text-brand-700 mt-1">Level: <span id="urgency-val">3</span></div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="flex justify-end gap-3">
-                                <button type="button" onclick="if(isAdmin) switchTab('dashboard')" class="px-6 py-2 rounded text-slate-600 hover:bg-slate-100">Batal</button>
-                                <button type="submit" class="px-6 py-2 rounded bg-brand-600 text-white hover:bg-brand-700 shadow-md">Kirim Laporan</button>
+                            <div class="flex justify-end gap-3 pt-4">
+                                <button type="button" onclick="if(isAdmin) switchTab('dashboard')" class="px-6 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors">Batal</button>
+                                <button type="submit" class="px-6 py-2.5 rounded-lg text-sm font-medium bg-brand-900 text-white hover:bg-brand-800 shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5">Kirim Laporan</button>
                             </div>
                         </form>
                     </div>
@@ -284,8 +311,17 @@
                 <!-- Side Panel Info -->
                 <div class="lg:col-span-1">
                     <div class="bg-brand-50 p-6 rounded-xl border border-brand-100 sticky top-24">
-                        <h3 class="font-bold text-brand-900 mb-2">💡 Info Penting</h3>
-                        <p class="text-sm text-brand-700 mb-4">Pastikan SN/Batch tercatat untuk klaim garansi. Project/Lokasi membantu teknisi menemukan unit.</p>
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="text-xl">💡</span>
+                            <h3 class="font-bold text-brand-900">Info Penting</h3>
+                        </div>
+                        <p class="text-sm text-brand-700 mb-4 leading-relaxed">
+                            Pastikan <strong>Serial Number (SN)</strong> dan <strong>Batch Modul</strong> tercatat untuk keperluan klaim garansi ke pabrik.
+                        </p>
+                        <div class="h-px bg-brand-200 my-4"></div>
+                        <p class="text-sm text-brand-700 leading-relaxed">
+                            Gunakan kolom <strong>Nama Project</strong> untuk memudahkan teknisi melacak lokasi pemasangan unit.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -296,12 +332,11 @@
     <script>
         // --- CONFIGURATION ---
         const apiKey = "AIzaSyC23J36bwT2FVDmsgQszP4CctH2yBAAE7w"; 
-        // ⚠️ GANTI INI DENGAN URL DEPLOYMENT GOOGLE SCRIPT TERBARU ANDA
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzHvMmtWCjLHDUaub9jnf_DTX0EmRWy7l65SLEAVpUee_IC8WRfHnnKkSrDLQjSPk_VUQ/exec"; 
         
         // --- AUTH CONFIG ---
-        // Daftar email yang boleh melihat Dashboard (Admin/QC)
-        const ALLOWED_ADMINS = ['admin@microvision.com', 'qc@microvision.com', 'boss@microvision.com'];
+        // 2. SYSTEM LOGIN (Access Control)
+        const ADMIN_KEYWORDS = ['admin', 'qc', 'boss', 'spv', 'manager']; 
         let isAdmin = false;
         let currentUser = "";
 
@@ -311,20 +346,22 @@
             const email = document.getElementById('login-email').value.toLowerCase();
             currentUser = email;
             
-            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('login-overlay').classList.add('hidden');
             document.getElementById('main-nav').classList.remove('hidden');
             document.getElementById('main-content').classList.remove('hidden');
-            document.getElementById('user-display').innerText = email;
+            document.getElementById('user-display').innerText = email.split('@')[0];
 
-            // Simple Logic: Check if email contains 'admin' or 'qc' or is in list
-            if (ALLOWED_ADMINS.includes(email) || email.includes('admin') || email.includes('qc')) {
+            // Cek apakah email mengandung keyword admin
+            if (ADMIN_KEYWORDS.some(role => email.includes(role))) {
                 isAdmin = true;
                 document.getElementById('nav-dashboard').classList.remove('hidden');
-                switchTab('dashboard'); // Admin masuk ke Dashboard
-                fetchData(); // Load data from Sheet
+                document.getElementById('role-display').innerText = "Administrator";
+                switchTab('dashboard'); 
+                fetchData(); // Load data from Sheet immediately
             } else {
                 isAdmin = false;
-                switchTab('form'); // Sales hanya ke Form
+                document.getElementById('role-display').innerText = "Sales Team";
+                switchTab('form'); 
             }
         }
 
@@ -340,17 +377,17 @@
             const btnForm = document.getElementById('nav-form');
 
             if (tabName === 'dashboard') {
-                if (!isAdmin) return; // Prevent access logic
+                if (!isAdmin) return; 
                 dashboard.classList.remove('hidden');
                 form.classList.add('hidden');
                 btnDash.className = "px-4 py-2 rounded-md text-sm font-medium bg-brand-50 text-brand-600 border border-brand-100 transition-colors shadow-sm";
                 btnForm.className = "px-4 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors";
+                fetchData(); // Refresh data when switching tab
             } else {
                 dashboard.classList.add('hidden');
                 form.classList.remove('hidden');
                 btnForm.className = "px-4 py-2 rounded-md text-sm font-medium bg-brand-50 text-brand-600 border border-brand-100 transition-colors shadow-sm";
                 btnDash.className = "px-4 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors";
-                // Set default date
                 document.getElementById('input-date').valueAsDate = new Date();
             }
         }
@@ -358,68 +395,88 @@
         // --- DATA MANAGEMENT (READ & WRITE) ---
         let allReports = [];
 
-        // 1. FETCH DATA (READ)
+        // FETCH DATA (READ FROM SHEET)
         async function fetchData() {
             if (!GOOGLE_SCRIPT_URL) return;
             
             const tableBody = document.getElementById('case-table-body');
-            tableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center">Sedang mengambil data dari Google Sheet...</td></tr>';
+            // Show loading state only if empty
+            if(tableBody.children.length <= 1) {
+                tableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-slate-500">⏳ Mengambil data terbaru dari server...</td></tr>';
+            }
 
             try {
-                const response = await fetch(GOOGLE_SCRIPT_URL); // Default GET
+                // Fetch default GET request
+                const response = await fetch(GOOGLE_SCRIPT_URL); 
                 const data = await response.json();
                 allReports = data;
-                
                 renderDashboard(allReports);
             } catch (error) {
                 console.error("Fetch Error:", error);
-                tableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-red-500">Gagal mengambil data. Cek koneksi atau URL Script.</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-red-500 bg-red-50 rounded-lg">Gagal koneksi ke Google Sheet. Periksa URL Script Anda.</td></tr>';
             }
         }
 
-        // 2. RENDER DASHBOARD & LIST
+        // RENDER DASHBOARD & TABLE
         function renderDashboard(data) {
-            // Metrics
+            // Metrics Calculation
             document.getElementById('total-reports').innerText = data.length;
-            const pending = data.filter(r => r.Status !== 'Closed').length;
-            document.getElementById('pending-reports').innerText = pending;
-            document.getElementById('closed-reports').innerText = data.length - pending;
+            
+            const pendingCount = data.filter(r => r.Status !== 'Closed').length;
+            const closedCount = data.length - pendingCount;
+            
+            document.getElementById('pending-reports').innerText = pendingCount;
+            document.getElementById('closed-reports').innerText = closedCount;
 
-            // Table List (Sorted by Date Descending)
+            // Progress Bars
+            const total = data.length || 1;
+            document.getElementById('bar-pending').style.width = `${(pendingCount/total)*100}%`;
+            document.getElementById('bar-closed').style.width = `${(closedCount/total)*100}%`;
+
+            // Render Table (Sorted by Date Descending)
             const tableBody = document.getElementById('case-table-body');
             tableBody.innerHTML = '';
             
-            // Sort: Terbaru di atas
+            // Sort data descending by Timestamp (newest first)
             const sortedData = [...data].sort((a, b) => new Date(b.Timestamp) - new Date(a.Timestamp));
 
             sortedData.forEach(row => {
-                // Determine ID key (Sheet headers might vary case)
-                const id = row.ID || row.id || row['ID (Baru)'] || row[Object.keys(row)[0]]; 
-                const statusColor = row.Status === 'Closed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
+                const id = row.id;
+                const isClosed = row.Status === 'Closed';
                 
-                // Format Date nicely
-                let dateStr = row.Tanggal || row.Date;
-                if (dateStr && new Date(dateStr) !== "Invalid Date") {
-                    dateStr = new Date(dateStr).toLocaleDateString('id-ID');
+                // Format Date safely
+                let dateStr = '-';
+                if(row.Date) {
+                    const d = new Date(row.Date);
+                    if(!isNaN(d.getTime())) {
+                        dateStr = d.toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'});
+                    } else {
+                        dateStr = String(row.Date).split('T')[0]; // Fallback string
+                    }
                 }
 
                 const tr = document.createElement('tr');
-                tr.className = "bg-white border-b hover:bg-slate-50";
+                tr.className = "bg-white border-b hover:bg-slate-50 transition";
                 tr.innerHTML = `
-                    <td class="px-6 py-4">${dateStr}</td>
-                    <td class="px-6 py-4 font-medium text-slate-900">${row.Sales}</td>
-                    <td class="px-6 py-4">${row.Project || row['Total Qty'] || '-'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-slate-500">${dateStr}</td>
                     <td class="px-6 py-4">
-                        <span class="font-bold block text-xs uppercase text-slate-500">${row.Kategori}</span>
-                        ${row.Produk}
+                        <div class="text-sm font-bold text-slate-800">${row.Project || '-'}</div>
+                        <div class="text-xs text-slate-500">${row.Product || ''}</div>
                     </td>
+                    <td class="px-6 py-4 text-slate-600">${row.Sales}</td>
                     <td class="px-6 py-4">
-                        <span class="${statusColor} text-xs font-medium px-2.5 py-0.5 rounded">${row.Status || 'Pending'}</span>
+                        <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-slate-100 text-slate-600 mb-1">${row.Category}</span>
                     </td>
-                    <td class="px-6 py-4">
-                        ${row.Status !== 'Closed' ? 
-                            `<button onclick="updateStatus('${id}', 'Closed')" class="text-xs bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600">Close Case</button>` : 
-                            `<button onclick="updateStatus('${id}', 'Pending')" class="text-xs bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">Re-Open</button>`
+                    <td class="px-6 py-4 text-center">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${isClosed ? 'status-closed' : 'status-open'}">
+                            ${isClosed ? 'Closed' : 'Open'}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <!-- 3. EDIT STATUS BUTTONS -->
+                        ${!isClosed ? 
+                            `<button onclick="updateStatus('${id}', 'Closed')" class="text-xs font-medium text-green-600 hover:text-green-800 border border-green-200 bg-green-50 hover:bg-green-100 px-3 py-1 rounded-md transition">✅ Close</button>` : 
+                            `<button onclick="updateStatus('${id}', 'Open')" class="text-xs font-medium text-slate-500 hover:text-slate-700 border border-slate-200 hover:bg-slate-100 px-3 py-1 rounded-md transition">↩ Re-open</button>`
                         }
                     </td>
                 `;
@@ -429,9 +486,16 @@
             updateCharts(data);
         }
 
-        // 3. UPDATE STATUS (EDIT)
+        // UPDATE STATUS (WRITE TO SHEET)
         async function updateStatus(id, newStatus) {
-            if(!confirm(`Ubah status kasus ini menjadi ${newStatus}?`)) return;
+            if(!confirm(`Apakah Anda yakin mengubah status menjadi ${newStatus}?`)) return;
+
+            // Optimistic UI Update (Agar user merasa cepat)
+            const row = allReports.find(r => r.id == id);
+            if(row) {
+                row.Status = newStatus;
+                renderDashboard(allReports);
+            }
 
             const payload = {
                 action: 'update_status',
@@ -439,32 +503,26 @@
                 status: newStatus
             };
 
-            // Optimistic UI Update (Update tampilan dulu biar cepat)
-            const row = allReports.find(r => (r.ID || r[Object.keys(r)[0]]) == id);
-            if(row) {
-                row.Status = newStatus;
-                renderDashboard(allReports);
-            }
-
-            // Send to Backend
             try {
+                // Send POST request
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
-                    mode: 'no-cors',
+                    mode: 'no-cors', // NO-CORS prevents read-back, but allows sending without preflight issues
                     headers: { 'Content-Type': 'text/plain' },
                     body: JSON.stringify(payload)
                 });
-                // Fetch real data again after delay
+                // Fetch real data to sync properly
                 setTimeout(fetchData, 2000); 
             } catch(e) {
-                alert("Gagal update status di server");
+                alert("Gagal update status di server. Cek koneksi.");
             }
         }
 
-        // 4. SUBMIT FORM (CREATE)
+        // SUBMIT FORM (WRITE TO SHEET)
         function handleFormSubmit(event) {
             event.preventDefault();
             const btn = event.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerText;
             btn.innerText = "Mengirim...";
             btn.disabled = true;
 
@@ -475,16 +533,14 @@
                 po: document.getElementById('input-po').value,
                 product: document.getElementById('input-product').value,
                 batch: document.getElementById('input-batch').value,
-                project: document.getElementById('input-project').value, // NEW FIELD
+                project: document.getElementById('input-project').value, // 4. PROJECT FIELD
                 qtyBad: document.getElementById('input-qty-bad').value,
                 category: document.getElementById('input-category').value,
                 chronology: document.getElementById('input-chronology').value,
                 request: document.getElementById('input-request').value,
-                urgency: document.getElementById('input-urgency').value,
-                status: 'Pending'
+                urgency: document.getElementById('input-urgency').value
             };
 
-            // Payload structure for GAS
             const payload = {
                 action: 'insert',
                 data: formData
@@ -493,24 +549,30 @@
             if (GOOGLE_SCRIPT_URL) {
                 fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
-                    mode: 'no-cors',
+                    mode: 'no-cors', // NO-CORS avoids strict CORS preflight
                     headers: { 'Content-Type': 'text/plain' },
                     body: JSON.stringify(payload)
                 })
                 .then(() => {
-                    alert("Laporan Terkirim & Tersimpan!");
+                    alert("Laporan Berhasil Disimpan!");
                     event.target.reset();
-                    btn.innerText = "Kirim Laporan";
+                    btn.innerText = originalText;
                     btn.disabled = false;
+                    
                     if(isAdmin) {
                         switchTab('dashboard');
-                        setTimeout(fetchData, 1500); // Refresh list
+                        setTimeout(fetchData, 1500); 
                     }
                 })
                 .catch(err => {
-                    alert("Error kirim data");
+                    alert("Gagal mengirim data. Cek URL Script.");
+                    btn.innerText = originalText;
                     btn.disabled = false;
                 });
+            } else {
+                alert("URL Google Script belum dipasang!");
+                btn.innerText = originalText;
+                btn.disabled = false;
             }
         }
 
@@ -519,21 +581,18 @@
         let urgChart = null;
 
         function updateCharts(data) {
-            // Process Data for Charts
             const catCounts = {};
-            const urgCounts = [0,0,0,0,0]; // 1-5
+            const urgCounts = [0,0,0,0,0]; 
 
             data.forEach(r => {
-                // Category
-                const cat = r.Kategori || r.category;
+                const cat = r.Category || 'Lainnya';
                 catCounts[cat] = (catCounts[cat] || 0) + 1;
                 
-                // Urgency (Asumsi kolom Urgensi berisi angka)
-                const urg = parseInt(r.Urgensi || r.urgency);
+                const urg = parseInt(r.Urgency);
                 if(urg >=1 && urg <=5) urgCounts[urg-1]++;
             });
 
-            // Render Category Chart
+            // Update Charts
             const ctxCat = document.getElementById('categoryChart').getContext('2d');
             if(catChart) catChart.destroy();
             catChart = new Chart(ctxCat, {
@@ -541,37 +600,37 @@
                 data: {
                     labels: Object.keys(catCounts),
                     datasets: [{
-                        label: 'Kasus',
+                        label: 'Jumlah Kasus',
                         data: Object.values(catCounts),
                         backgroundColor: '#0ea5e9',
-                        borderRadius: 4
+                        borderRadius: 6
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false} } }
             });
 
-            // Render Urgency Chart
             const ctxUrg = document.getElementById('urgencyChart').getContext('2d');
             if(urgChart) urgChart.destroy();
             urgChart = new Chart(ctxUrg, {
                 type: 'line',
                 data: {
-                    labels: ['Level 1', 'Level 2', 'Level 3', 'Level 4', 'Level 5'],
+                    labels: ['Low (1)', 'Normal (2)', 'Medium (3)', 'High (4)', 'Urgent (5)'],
                     datasets: [{
-                        label: 'Jumlah Kasus per Level',
+                        label: 'Frekuensi Urgensi',
                         data: urgCounts,
                         borderColor: '#f97316',
+                        backgroundColor: 'rgba(249, 115, 22, 0.1)',
                         fill: true,
-                        backgroundColor: 'rgba(249, 115, 22, 0.1)'
+                        tension: 0.4
                     }]
                 },
                 options: { responsive: true, maintainAspectRatio: false }
             });
         }
 
-        // --- AI FEATURES (SIMPLIFIED) ---
+        // --- AI FEATURES ---
         async function callGeminiAPI(prompt) {
-            if (!apiKey) return alert("API Key Missing");
+            if (!apiKey) { alert("API Key Kosong"); return null; }
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
             try {
                 const res = await fetch(url, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) });
@@ -582,19 +641,30 @@
 
         async function generateAnalysis() {
             const txt = document.getElementById('input-chronology').value;
-            if(txt.length < 5) return alert("Isi kronologi dulu");
-            const res = await callGeminiAPI("Analisis teknis singkat untuk masalah videotron/display ini: " + txt);
+            const prod = document.getElementById('input-product').value;
+            if(txt.length < 5) return alert("Mohon isi kronologi kerusakan terlebih dahulu.");
+            
+            const btn = event.target;
+            btn.innerText = "⏳...";
+            const res = await callGeminiAPI(`Analisis teknis singkat (Root Cause & Action) untuk masalah display (${prod}): ${txt}`);
+            btn.innerText = "✨ AI Analysis";
+            
             if(res) {
                 const div = document.getElementById('ai-analysis-result');
                 div.classList.remove('hidden');
-                div.innerText = res;
+                div.innerHTML = marked.parse(res);
             }
         }
 
         async function generateReply() {
             const req = document.getElementById('input-request').value;
-            if(!req) return alert("Pilih request dulu");
-            const res = await callGeminiAPI("Buat draft WA sopan ke customer B2B mengenai tindak lanjut: " + req);
+            if(!req) return alert("Pilih request customer dulu.");
+            
+            const btn = event.target;
+            btn.innerText = "⏳...";
+            const res = await callGeminiAPI("Buat draft pesan WhatsApp sopan & profesional (Bahasa Indonesia) ke klien korporat mengenai status tiket QC dan tindak lanjut: " + req);
+            btn.innerText = "✨ Draft WA";
+
             if(res) {
                 const div = document.getElementById('ai-reply-result');
                 div.classList.remove('hidden');
@@ -602,7 +672,6 @@
             }
         }
 
-        // Range Slider UI
         document.getElementById('input-urgency').addEventListener('input', function(e) {
             document.getElementById('urgency-val').innerText = e.target.value;
         });
@@ -610,4 +679,3 @@
     </script>
 </body>
 </html>
-
