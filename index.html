@@ -358,7 +358,28 @@
         let isAdmin = false;
         let currentUser = "";
 
-        // --- AUTH FUNCTIONS ---
+        // --- SESSION & AUTH ---
+        window.addEventListener('load', () => {
+            // Restore session from LocalStorage
+            const savedUser = localStorage.getItem('mv_user');
+            if (savedUser) {
+                const email = savedUser;
+                document.getElementById('user-display').innerText = email.split('@')[0];
+                
+                if (ADMIN_KEYWORDS.some(role => email.includes(role))) {
+                    // Restore Admin state
+                    isAdmin = true;
+                    document.getElementById('nav-dashboard').classList.remove('hidden');
+                    document.getElementById('btn-login-trigger').classList.add('hidden');
+                    document.getElementById('user-panel').classList.remove('hidden');
+                    document.getElementById('role-display').innerText = "Administrator";
+                    
+                    // Stay on form initially, but allow dashboard access
+                    fetchData(); 
+                }
+            }
+        });
+
         function showLogin() {
             document.getElementById('login-overlay').classList.remove('hidden');
         }
@@ -376,25 +397,28 @@
             hideLogin();
             document.getElementById('user-display').innerText = email.split('@')[0];
 
-            // Cek apakah email mengandung keyword admin
+            // Cek Admin
             if (ADMIN_KEYWORDS.some(role => email.includes(role))) {
                 isAdmin = true;
-                // Show Dashboard menu & User Panel, Hide Login Button
+                // Save Session
+                localStorage.setItem('mv_user', email);
+
+                // UI Updates
                 document.getElementById('nav-dashboard').classList.remove('hidden');
                 document.getElementById('btn-login-trigger').classList.add('hidden');
                 document.getElementById('user-panel').classList.remove('hidden');
-                
                 document.getElementById('role-display').innerText = "Administrator";
+                
                 switchTab('dashboard'); 
                 fetchData(); 
             } else {
-                alert("Akses ditolak. Email Anda tidak memiliki izin Admin.");
-                // Reset to default state if needed or just stay on form
+                alert("Akses Dashboard ditolak. Email tidak terdaftar sebagai Admin/QC.");
             }
         }
 
         function logout() {
-            location.reload(); // Refresh to reset state
+            localStorage.removeItem('mv_user'); // Clear Session
+            location.reload(); 
         }
 
         // --- NAVIGATION ---
@@ -410,7 +434,7 @@
                 form.classList.add('hidden');
                 btnDash.className = "px-4 py-2 rounded-md text-sm font-medium bg-brand-50 text-brand-600 border border-brand-100 transition-colors shadow-sm";
                 btnForm.className = "px-4 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors";
-                fetchData(); // Refresh data when switching tab
+                fetchData(); 
             } else {
                 dashboard.classList.add('hidden');
                 form.classList.remove('hidden');
@@ -428,20 +452,21 @@
             if (!GOOGLE_SCRIPT_URL) return;
             
             const tableBody = document.getElementById('case-table-body');
-            // Show loading state only if empty
             if(tableBody.children.length <= 1) {
                 tableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-slate-500">⏳ Mengambil data terbaru dari server...</td></tr>';
             }
 
             try {
-                // Fetch default GET request
-                const response = await fetch(GOOGLE_SCRIPT_URL); 
+                // Tambah timestamp agar tidak di-cache browser
+                const url = `${GOOGLE_SCRIPT_URL}?t=${new Date().getTime()}`;
+                
+                const response = await fetch(url); 
                 const data = await response.json();
                 allReports = data;
                 renderDashboard(allReports);
             } catch (error) {
                 console.error("Fetch Error:", error);
-                tableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-red-500 bg-red-50 rounded-lg">Gagal koneksi ke Google Sheet. Periksa URL Script Anda.</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-red-500 bg-red-50 rounded-lg">Gagal koneksi ke Google Sheet. Periksa deployment script Anda.</td></tr>';
             }
         }
 
@@ -465,7 +490,6 @@
             const tableBody = document.getElementById('case-table-body');
             tableBody.innerHTML = '';
             
-            // Sort data descending by Timestamp (newest first)
             const sortedData = [...data].sort((a, b) => new Date(b.Timestamp) - new Date(a.Timestamp));
 
             sortedData.forEach(row => {
@@ -479,7 +503,7 @@
                     if(!isNaN(d.getTime())) {
                         dateStr = d.toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'});
                     } else {
-                        dateStr = String(row.Date).split('T')[0]; // Fallback string
+                        dateStr = String(row.Date).split('T')[0]; 
                     }
                 }
 
@@ -501,7 +525,6 @@
                         </span>
                     </td>
                     <td class="px-6 py-4 text-center">
-                        <!-- 3. EDIT STATUS BUTTONS -->
                         ${!isClosed ? 
                             `<button onclick="updateStatus('${id}', 'Closed')" class="text-xs font-medium text-green-600 hover:text-green-800 border border-green-200 bg-green-50 hover:bg-green-100 px-3 py-1 rounded-md transition">✅ Close</button>` : 
                             `<button onclick="updateStatus('${id}', 'Open')" class="text-xs font-medium text-slate-500 hover:text-slate-700 border border-slate-200 hover:bg-slate-100 px-3 py-1 rounded-md transition">↩ Re-open</button>`
@@ -518,7 +541,6 @@
         async function updateStatus(id, newStatus) {
             if(!confirm(`Apakah Anda yakin mengubah status menjadi ${newStatus}?`)) return;
 
-            // Optimistic UI Update (Agar user merasa cepat)
             const row = allReports.find(r => r.id == id);
             if(row) {
                 row.Status = newStatus;
@@ -532,14 +554,12 @@
             };
 
             try {
-                // Send POST request
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
-                    mode: 'no-cors', // NO-CORS prevents read-back, but allows sending without preflight issues
-                    headers: { 'Content-Type': 'text/plain' },
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify(payload)
                 });
-                // Fetch real data to sync properly
                 setTimeout(fetchData, 2000); 
             } catch(e) {
                 alert("Gagal update status di server. Cek koneksi.");
@@ -561,7 +581,7 @@
                 po: document.getElementById('input-po').value,
                 product: document.getElementById('input-product').value,
                 batch: document.getElementById('input-batch').value,
-                project: document.getElementById('input-project').value, // 4. PROJECT FIELD
+                project: document.getElementById('input-project').value, 
                 qtyBad: document.getElementById('input-qty-bad').value,
                 category: document.getElementById('input-category').value,
                 chronology: document.getElementById('input-chronology').value,
@@ -577,8 +597,8 @@
             if (GOOGLE_SCRIPT_URL) {
                 fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
-                    mode: 'no-cors', // NO-CORS avoids strict CORS preflight
-                    headers: { 'Content-Type': 'text/plain' },
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify(payload)
                 })
                 .then(() => {
@@ -620,7 +640,6 @@
                 if(urg >=1 && urg <=5) urgCounts[urg-1]++;
             });
 
-            // Update Charts
             const ctxCat = document.getElementById('categoryChart').getContext('2d');
             if(catChart) catChart.destroy();
             catChart = new Chart(ctxCat, {
@@ -710,4 +729,3 @@
     </script>
 </body>
 </html>
-
