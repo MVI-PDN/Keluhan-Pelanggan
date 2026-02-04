@@ -225,7 +225,7 @@
                                     </div>
                                     <div class="form-group" onfocusin="updateContext('identity')">
                                         <label class="block text-sm font-semibold text-slate-700 mb-1">Tanggal Laporan *</label>
-                                        <input type="date" required class="w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 p-2.5 border transition">
+                                        <input type="date" id="input-date" required class="w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 p-2.5 border transition">
                                     </div>
                                     <div class="form-group md:col-span-2" onfocusin="updateContext('identity')">
                                         <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Perusahaan / Customer *</label>
@@ -233,7 +233,7 @@
                                     </div>
                                     <div class="form-group md:col-span-2" onfocusin="updateContext('po_info')">
                                         <label class="block text-sm font-semibold text-slate-700 mb-1">Nomor PO / Invoice / Surat Jalan *</label>
-                                        <input type="text" required class="w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 p-2.5 border transition" placeholder="Contoh: INV-2024-VID-001">
+                                        <input type="text" id="input-po" required class="w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 p-2.5 border transition" placeholder="Contoh: INV-2024-VID-001">
                                     </div>
                                 </div>
                             </div>
@@ -251,15 +251,15 @@
                                     </div>
                                     <div class="form-group md:col-span-2" onfocusin="updateContext('batch_code')">
                                         <label class="block text-sm font-semibold text-slate-700 mb-1">Serial Number (SN) / Kode Batch Modul *</label>
-                                        <input type="text" required class="w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 p-2.5 border transition" placeholder="Lihat di belakang kabinet/modul">
+                                        <input type="text" id="input-batch" required class="w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 p-2.5 border transition" placeholder="Lihat di belakang kabinet/modul">
                                     </div>
                                     <div class="form-group" onfocusin="updateContext('qty')">
                                         <label class="block text-sm font-semibold text-slate-700 mb-1">Total Unit Terpasang *</label>
-                                        <input type="number" required class="w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 p-2.5 border transition">
+                                        <input type="number" id="input-qty-total" required class="w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 p-2.5 border transition">
                                     </div>
                                     <div class="form-group" onfocusin="updateContext('qty')">
                                         <label class="block text-sm font-semibold text-slate-700 mb-1">Unit/Modul Bermasalah *</label>
-                                        <input type="number" required class="w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 p-2.5 border transition">
+                                        <input type="number" id="input-qty-bad" required class="w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 p-2.5 border transition">
                                     </div>
                                 </div>
                             </div>
@@ -310,7 +310,7 @@
 
                                     <div class="form-group" onfocusin="updateContext('sample')">
                                         <label class="block text-sm font-semibold text-slate-700 mb-1">Status Barang Bukti (Modul/Unit) *</label>
-                                        <select required class="w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 p-2.5 border transition bg-white">
+                                        <select id="input-sample-status" required class="w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 p-2.5 border transition bg-white">
                                             <option value="">-- Pilih Status --</option>
                                             <option value="Sales">Part/Unit dibawa Sales</option>
                                             <option value="Customer">Part/Unit masih terpasang di Customer</option>
@@ -443,7 +443,8 @@
     <!-- JavaScript Logic -->
     <script>
         // --- GEMINI API CONFIGURATION ---
-        const apiKey = ""; // Masukkan API Key di sini untuk mengaktifkan AI
+        const apiKey = "AIzaSyC23J36bwT2FVDmsgQszP4CctH2yBAAE7w"; // Masukkan API Key di sini untuk mengaktifkan AI
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwuXCMhiMFj3vJHUTy5n92Bz2bcwL-VYsS2-AN6m5icfzXKcdOX0oQlJe6QnJ0FCHwZPA/exec"; // Isi dengan URL Web App Google Script
         
         async function callGeminiAPI(promptText) {
             if (!apiKey) {
@@ -740,9 +741,27 @@
 
         function handleFormSubmit(event) {
             event.preventDefault();
-            const category = document.getElementById('input-category').value;
-            const request = document.getElementById('input-request').value;
-            const urgency = parseInt(document.getElementById('input-urgency').value);
+            
+            // Collect Form Data
+            const formData = {
+                sales: document.getElementById('input-sales').value,
+                date: document.getElementById('input-date').value,
+                customer: document.getElementById('input-customer').value,
+                po: document.getElementById('input-po').value,
+                product: document.getElementById('input-product').value,
+                batch: document.getElementById('input-batch').value,
+                qtyTotal: document.getElementById('input-qty-total').value,
+                qtyBad: document.getElementById('input-qty-bad').value,
+                category: document.getElementById('input-category').value,
+                chronology: document.getElementById('input-chronology').value,
+                status: document.getElementById('input-sample-status').value,
+                request: document.getElementById('input-request').value,
+                urgency: parseInt(document.getElementById('input-urgency').value)
+            };
+
+            const category = formData.category;
+            const request = formData.request;
+            const urgency = formData.urgency;
 
             if(!category || !request) {
                 alert("Mohon lengkapi semua data wajib.");
@@ -754,6 +773,28 @@
             btn.innerText = "Mengirim...";
             btn.disabled = true;
 
+            // Submit to Google Sheets (if URL is present)
+            if (GOOGLE_SCRIPT_URL) {
+                fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Important for Google Apps Script Web App
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then(response => {
+                    console.log("Data sent to Google Sheet");
+                })
+                .catch(error => {
+                    console.error("Error sending to Google Sheet:", error);
+                    alert("Gagal menyimpan ke Google Sheet (Cek Konsol)");
+                });
+            } else {
+                console.warn("Google Script URL not set. Skipping Sheet submission.");
+            }
+
+            // Simulate Local Update (UI Feedback)
             setTimeout(() => {
                 state.totalReports += 1;
                 document.getElementById('total-reports').innerText = state.totalReports;
@@ -778,7 +819,7 @@
                 btn.innerText = originalText;
                 btn.disabled = false;
                 
-                alert("Laporan Berhasil Dikirim ke QC!");
+                alert("Laporan Berhasil Dikirim ke QC" + (GOOGLE_SCRIPT_URL ? " & Google Sheet!" : "!"));
                 switchTab('dashboard');
                 
             }, 1000);
