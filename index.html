@@ -350,7 +350,7 @@
     <script>
         // --- CONFIGURATION ---
         const apiKey = "AIzaSyC23J36bwT2FVDmsgQszP4CctH2yBAAE7w"; 
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyUtSO_q9M3sK48CiFD9RySA13eAIKf8GDdF1troA6_Iggp0mgpK1BZa1vGXuZEuNQLJw/exec"; 
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzHvMmtWCjLHDUaub9jnf_DTX0EmRWy7l65SLEAVpUee_IC8WRfHnnKkSrDLQjSPk_VUQ/exec"; 
         
         // --- AUTH CONFIG ---
         // 2. SYSTEM LOGIN (Access Control)
@@ -457,7 +457,7 @@
             }
 
             try {
-                // Tambah timestamp agar tidak di-cache browser
+                // Tambah timestamp agar tidak di-cache browser (FIXED)
                 const url = `${GOOGLE_SCRIPT_URL}?t=${new Date().getTime()}`;
                 
                 const response = await fetch(url); 
