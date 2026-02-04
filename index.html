@@ -69,13 +69,15 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
 
-            <!-- LOGO IMAGE -->
+            <!-- LOGO IMAGE (Fixed URL from your Repo) -->
             <img src="https://raw.githubusercontent.com/MVI-PDN/Keluhan-Pelanggan/main/microvision-logo.webp" 
                  alt="Microvision Logo" 
                  class="h-12 mx-auto mb-6 object-contain"
                  onerror="this.style.display='none'; document.getElementById('login-logo-text').classList.remove('hidden')">
             
+            <!-- Fallback Text -->
             <h1 id="login-logo-text" class="text-4xl font-bold text-brand-900 italic mb-4 tracking-wide hidden">Microvision</h1>
+
             <h2 class="text-lg font-semibold text-slate-600 mb-6 uppercase tracking-wider">Pengaduan Pelanggan</h2>
             
             <form onsubmit="handleLogin(event)" class="space-y-4">
@@ -94,16 +96,31 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-16">
                     <div class="flex items-center gap-3">
+                        <!-- NAVBAR LOGO -->
                         <img src="https://raw.githubusercontent.com/MVI-PDN/Keluhan-Pelanggan/main/microvision-logo.webp" 
                              alt="Microvision Logo" 
                              class="h-8 w-auto object-contain"
                              onerror="this.style.display='none'; document.getElementById('nav-logo-text').classList.remove('hidden')">
+                        
                         <h1 id="nav-logo-text" class="font-bold text-brand-900 text-2xl leading-tight italic tracking-wide hidden">Microvision</h1>
                     </div>
                     <div class="flex items-center space-x-3">
-                        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="hidden px-4 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors">Dashboard</button>
-                        <button onclick="switchTab('form')" id="nav-form" class="px-4 py-2 rounded-md text-sm font-medium bg-brand-50 text-brand-600 border border-brand-100 transition-colors shadow-sm">Laporan Baru</button>
-                        <button id="btn-login-trigger" onclick="showLogin()" class="px-4 py-2 rounded-md text-sm font-medium text-white bg-brand-900 hover:bg-brand-800 transition-colors shadow-sm">Login Admin</button>
+                        <!-- Dashboard Button (Hidden initially) -->
+                        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="hidden px-4 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors">
+                            Dashboard
+                        </button>
+                        
+                        <!-- Laporan Baru Button -->
+                        <button onclick="switchTab('form')" id="nav-form" class="px-4 py-2 rounded-md text-sm font-medium bg-brand-50 text-brand-600 border border-brand-100 transition-colors shadow-sm">
+                            Laporan Baru
+                        </button>
+
+                        <!-- LOGIN BUTTON (Visible by default) -->
+                        <button id="btn-login-trigger" onclick="showLogin()" class="px-4 py-2 rounded-md text-sm font-medium text-white bg-brand-900 hover:bg-brand-800 transition-colors shadow-sm">
+                            Login Admin
+                        </button>
+
+                        <!-- USER PANEL (Hidden by default) -->
                         <div id="user-panel" class="hidden flex items-center border-l pl-4 ml-2 gap-3">
                             <div class="text-right hidden md:block">
                                 <span class="block text-xs font-bold text-slate-700" id="user-display">User</span>
@@ -128,8 +145,13 @@
                         <p class="text-slate-600 text-sm mt-1">Data Real-time dari Google Sheets.</p>
                     </div>
                     <div class="flex gap-2">
-                        <button onclick="downloadExcel()" class="text-xs font-bold bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 px-4 py-2 rounded-lg transition flex items-center gap-2">📥 Download Excel</button>
-                        <button onclick="fetchData()" class="text-xs font-bold bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 px-4 py-2 rounded-lg transition flex items-center gap-2">🔄 Refresh Data</button>
+                        <!-- DOWNLOAD BUTTON -->
+                        <button onclick="downloadExcel()" class="text-xs font-bold bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 px-4 py-2 rounded-lg transition flex items-center gap-2">
+                            📥 Download Excel
+                        </button>
+                        <button onclick="fetchData()" class="text-xs font-bold bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 px-4 py-2 rounded-lg transition flex items-center gap-2">
+                            🔄 Refresh Data
+                        </button>
                     </div>
                 </div>
 
@@ -226,11 +248,11 @@
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         <div class="md:col-span-2">
                                             <label class="block text-sm font-semibold text-slate-700 mb-1">Tipe Produk / Model *</label>
-                                            <input type="text" id="input-product" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500" placeholder="Ex: Videotron P2.5 Indoor">
+                                            <input type="text" id="input-product" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500">
                                         </div>
                                         <div class="md:col-span-2">
                                             <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Project / Lokasi *</label>
-                                            <input type="text" id="input-project" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500" placeholder="Ex: Ruang Rapat Lt. 3">
+                                            <input type="text" id="input-project" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500">
                                         </div>
                                         <div class="md:col-span-2">
                                             <label class="block text-sm font-semibold text-slate-700 mb-1">Serial Number / Batch Modul</label>
@@ -260,9 +282,7 @@
                                             </select>
                                         </div>
                                         <div>
-                                            <div class="flex justify-between mb-1">
-                                                <label class="block text-sm font-semibold text-slate-700">Kronologi *</label>
-                                            </div>
+                                            <label class="block text-sm font-semibold text-slate-700 mb-1">Kronologi *</label>
                                             <textarea id="input-chronology" required rows="4" class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></textarea>
                                         </div>
                                     </div>
@@ -293,7 +313,7 @@
                                         <div id="preview-container" class="hidden mt-4 relative group w-full max-w-xs mx-auto border rounded-lg overflow-hidden preview-wrapper">
                                             <div id="preview-content" class="bg-slate-100 flex items-center justify-center h-48 w-full"></div>
                                             <!-- Hover Delete Button -->
-                                            <button type="button" onclick="removeFile(event)" class="delete-btn opacity-0 group-hover:opacity-100 transition-opacity absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 shadow-md z-10" title="Hapus File">
+                                            <button type="button" onclick="removeFile(event)" class="delete-btn opacity-0 transition-opacity absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 shadow-md z-10" title="Hapus File">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                                             </button>
                                             <div class="bg-white px-3 py-2 text-xs text-slate-600 truncate border-t" id="filename-display">filename.jpg</div>
@@ -320,9 +340,7 @@
                                         </div>
 
                                         <div class="md:col-span-2">
-                                            <div class="flex justify-between mb-1">
-                                                <label class="block text-sm font-semibold text-slate-700">Request Customer *</label>
-                                            </div>
+                                            <label class="block text-sm font-semibold text-slate-700 mb-1">Request Customer *</label>
                                             <select id="input-request" required class="w-full rounded border-slate-300 p-2.5 border bg-white mb-2 focus:ring-brand-500">
                                                 <option value="Service On-site">Kunjungan Teknisi</option>
                                                 <option value="Sparepart">Kirim Sparepart</option>
@@ -370,7 +388,7 @@
 
     <!-- LOGIC -->
     <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxiuLSRdb5JQ_8ohZzy5zVuYxxltL7CXNPaHLpAMrNAOMav4tfWdPo_Sz1vkhoKvd8AZA/exec"; 
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwiID4mD0J7GdZ7k2iHuOBtkcEH-JbCNKPefCO0FQC9IVc87IQOj8Zk7sImcwRVOgo53g/exec"; 
         const ADMIN_KEYWORDS = ['admin', 'qc', 'boss', 'spv', 'manager']; 
         let isAdmin = false;
         let currentUser = "";
