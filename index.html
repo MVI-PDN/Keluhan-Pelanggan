@@ -70,7 +70,7 @@
             <h2 class="text-lg font-semibold text-slate-600 mb-6 uppercase tracking-wider">Akses Dashboard</h2>
             
             <form onsubmit="handleLogin(event)" class="space-y-4">
-                <input type="email" id="login-email" required class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none text-sm transition text-center" placeholder="Masukkan Email Admin">
+                <input type="email" id="login-email" required class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none text-sm transition text-center" placeholder="nama@gmail.com">
                 <button type="submit" class="w-full bg-brand-900 text-white py-3 rounded-lg font-bold hover:bg-brand-800 transition shadow-md text-sm">Masuk</button>
             </form>
             <p class="mt-4 text-[10px] text-slate-400">Khusus untuk Tim QC & Management</p>
@@ -325,6 +325,7 @@
     <!-- LOGIC -->
     <script>
         const apiKey = "AIzaSyC23J36bwT2FVDmsgQszP4CctH2yBAAE7w"; 
+        // ⚠️ PASTIKAN URL INI ADALAH URL TERBARU SETELAH ANDA DEPLOY ULANG (SET 'ANYONE')
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwNcQRnDd-NuDQqvzVy49uQyMW3vyTZfNR0KcTF6xsc-V_Ge9ToL8lrLzJSLgPGRTj2PA/exec"; 
         const ADMIN_KEYWORDS = ['admin', 'qc', 'boss', 'spv', 'manager']; 
         let isAdmin = false;
@@ -343,6 +344,9 @@
                     document.getElementById('btn-login-trigger').classList.add('hidden');
                     document.getElementById('user-panel').classList.remove('hidden');
                     document.getElementById('role-display').innerText = "Administrator";
+                    
+                    // Jangan langsung fetch kalau di form, hanya fetch kalau user klik dashboard
+                    // Tapi kita bisa pre-fetch di background
                     fetchData(); 
                 }
             }
@@ -402,18 +406,22 @@
         async function fetchData() {
             if (!GOOGLE_SCRIPT_URL) return;
             const tableBody = document.getElementById('case-table-body');
+            // Only show loading if empty
             if(tableBody.children.length <= 1) {
                 tableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-slate-500">⏳ Mengambil data...</td></tr>';
             }
 
             try {
-                // Tambahkan timestamp untuk hindari cache
-                const response = await fetch(`${GOOGLE_SCRIPT_URL}?t=${new Date().getTime()}`, { redirect: "follow" }); 
+                // Tambahkan timestamp untuk hindari cache & credentials omit
+                const response = await fetch(`${GOOGLE_SCRIPT_URL}?t=${new Date().getTime()}`, { 
+                    redirect: "follow",
+                    credentials: 'omit' // Penting untuk menghindari blokir auth Google
+                }); 
                 const data = await response.json();
                 renderDashboard(data);
             } catch (error) {
                 console.error("Fetch Error:", error);
-                tableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-red-500 bg-red-50 rounded-lg">Gagal koneksi. Cek Permission Script menjadi "Anyone".</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-red-500 bg-red-50 rounded-lg">Gagal koneksi. Pastikan Deployment Script diset ke "Anyone" (Siapa Saja).</td></tr>';
             }
         }
 
