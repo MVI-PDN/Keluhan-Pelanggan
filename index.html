@@ -99,8 +99,8 @@
                         <div class="font-medium col-span-2 flex items-center gap-2">
                             <span id="modal-sales-phone" class="text-slate-700">-</span>
                             <!-- Tombol WA -->
-                            <a id="btn-wa-sales" href="#" target="_blank" class="hidden text-xs bg-green-500 hover:bg-green-600 text-white px-2 py-0.5 rounded flex items-center gap-1 transition shadow-sm border border-green-600 no-underline">
-                                💬 Chat
+                            <a id="btn-wa-sales" href="#" target="_blank" class="hidden text-xs bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded flex items-center gap-1 transition shadow-sm border border-green-600 no-underline font-bold">
+                                💬 Chat WA
                             </a>
                         </div>
                         
@@ -185,7 +185,6 @@
                     <button onclick="saveCaseUpdate()" id="btn-save-update" class="w-full bg-brand-900 text-white py-3 rounded-lg font-bold hover:bg-brand-800 transition shadow-lg text-sm flex justify-center items-center gap-2 transform active:scale-95 duration-150">
                         <span>Simpan Perubahan</span>
                     </button>
-                    <p class="text-[10px] text-center text-slate-400 mt-2 italic">*Pesan WA otomatis disiapkan saat status 'Closed'.</p>
                 </div>
             </div>
         </div>
@@ -236,7 +235,7 @@
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow">
             <!-- DASHBOARD -->
             <section id="dashboard-view" class="hidden space-y-8 fade-in">
-                <div class="flex justify-between items-end bg-white rounded-xl p-6 border border-slate-200 shadow-sm gap-4">
+                <div class="flex flex-col md:flex-row justify-between items-end bg-white rounded-xl p-6 border border-slate-200 shadow-sm gap-4">
                     <div>
                         <h2 class="text-2xl font-bold text-slate-800">Quality Control Dashboard</h2>
                         <p class="text-slate-600 text-sm mt-1">Data Real-time dari Google Sheets.</p>
@@ -360,7 +359,7 @@
                                         <div><label class="block text-sm font-semibold text-slate-700 mb-1">Nama Sales / PIC *</label><input type="text" id="input-sales" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
                                         <div><label class="block text-sm font-semibold text-slate-700 mb-1">No HP Sales (WA) *</label><input type="text" id="input-phone-sales" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500" placeholder="0812xxxx"></div>
                                         <div><label class="block text-sm font-semibold text-slate-700 mb-1">Tanggal Laporan *</label><input type="date" id="input-date" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
-                                        <div class="md:col-span-1"><label class="block text-sm font-semibold text-slate-700 mb-1">Nama Customer / PT *</label><input type="text" id="input-customer" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500" placeholder="Ex: MPDN / MLDS"></div>
+                                        <div class="md:col-span-1"><label class="block text-sm font-semibold text-slate-700 mb-1">Nama Customer / PT *</label><input type="text" id="input-customer" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
                                         <div class="md:col-span-2"><label class="block text-sm font-semibold text-slate-700 mb-1">No PO / SPK *</label><input type="text" id="input-po" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
                                     </div>
                                 </div>
@@ -369,7 +368,7 @@
                                     <h3 class="font-bold text-brand-900 mb-4 text-sm bg-brand-100 inline-block px-2 py-1 rounded">DATA UNIT</h3>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         <div class="md:col-span-2"><label class="block text-sm font-semibold text-slate-700 mb-1">Tipe Produk / Model *</label><input type="text" id="input-product" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500" placeholder="Ex: Videotron P2.5 Indoor"></div>
-                                        <div class="md:col-span-2"><label class="block text-sm font-semibold text-slate-700 mb-1">Nama Project / Lokasi *</label><input type="text" id="input-project" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
+                                        <div class="md:col-span-2"><label class="block text-sm font-semibold text-slate-700 mb-1">Nama Project / Lokasi *</label><input type="text" id="input-project" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500" placeholder="Ex: Ruang Rapat Lt. 3"></div>
                                         <div class="md:col-span-2"><label class="block text-sm font-semibold text-slate-700 mb-1">Serial Number / Batch Modul</label><input type="text" id="input-batch" class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
                                         <div><label class="block text-sm font-semibold text-slate-700 mb-1">Jml. Unit Bermasalah *</label><input type="number" id="input-qty-bad" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
                                     </div>
@@ -410,8 +409,8 @@
                                 <div class="bg-slate-50 p-6 rounded-lg border border-slate-200">
                                     <h3 class="font-bold text-brand-900 mb-4 text-sm bg-brand-100 inline-block px-2 py-1 rounded">TINDAK LANJUT</h3>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                        <div><label class="block text-sm font-semibold text-slate-700 mb-1">Tanggal Kebutuhan Unit</label><input type="date" id="input-need-date" class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
-                                        <div><label class="block text-sm font-semibold text-slate-700 mb-1">Estimasi Unit Dikembalin</label><input type="date" id="input-return-date" class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
+                                        <div><label class="block text-sm font-semibold text-slate-700 mb-1">Tanggal Kebutuhan</label><input type="date" id="input-need-date" class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
+                                        <div><label class="block text-sm font-semibold text-slate-700 mb-1">Estimasi Kembali</label><input type="date" id="input-return-date" class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
                                         <div class="md:col-span-2">
                                             <label class="block text-sm font-semibold text-slate-700 mb-1">Request Customer *</label>
                                             <select id="input-request" required class="w-full rounded border-slate-300 p-2.5 border bg-white mb-2 focus:ring-brand-500"><option value="Service On-site">Kunjungan Teknisi</option><option value="Sparepart">Kirim Sparepart</option><option value="Replace Unit">Ganti Unit Baru</option><option value="Remote">Bantuan Remote</option></select>
@@ -433,13 +432,18 @@
                     <div class="lg:col-span-1">
                         <div class="bg-brand-50 p-6 rounded-xl border border-brand-100 sticky top-24">
                             <div class="flex items-center gap-2 mb-3"><span class="text-xl">💡</span><h3 class="font-bold text-brand-900">Info Penting</h3></div>
-                            <p class="text-sm text-brand-700 mb-4 leading-relaxed">Pastikan <strong>Serial Number</strong> tercatat dengan lengkap dan benar.</p>
+                            <p class="text-sm text-brand-700 mb-4 leading-relaxed">Pastikan <strong>Serial Number</strong> tercatat untuk klaim garansi.</p>
                         </div>
                     </div>
                 </div>
             </section>
         </main>
     </div>
+
+    <!-- FOOTER VERSION INDICATOR -->
+    <footer class="text-center py-4 text-[10px] text-slate-400 bg-white border-t border-slate-100 mt-8">
+        Versi: 2.1 (Live) - <span id="last-updated">Last Updated</span>
+    </footer>
 
     <script>
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwwOy3VguxVkmgUdz4wYy5JXmQvGToUTkBFDhOdKEchderlYaNV24PuCdLIZ7UAMYK9BQ/exec"; 
@@ -449,6 +453,9 @@
         let currentFile = null; 
         let allReports = [];
         let currentEditingId = null;
+
+        // Set Last Updated Text
+        document.getElementById('last-updated').innerText = new Date().toLocaleString();
 
         window.addEventListener('load', () => {
             const savedUser = localStorage.getItem('mv_user');
@@ -523,7 +530,6 @@
             }
         }
 
-        // Apply Filters (Date + Search)
         function applyFilters() {
             const month = document.getElementById('filter-month').value;
             const year = document.getElementById('filter-year').value;
@@ -531,21 +537,19 @@
 
             let filtered = allReports;
 
-            // 1. Filter by Date
             if (month !== 'all' || year !== 'all') {
                 filtered = filtered.filter(row => {
                     if (!row.Date) return false;
                     const d = new Date(row.Date);
                     const m = d.getMonth().toString();
                     const y = d.getFullYear().toString();
-                    
                     const matchMonth = (month === 'all') || (m === month);
                     const matchYear = (year === 'all') || (y === year);
                     return matchMonth && matchYear;
                 });
             }
 
-            // 2. Filter by PO (Search)
+            // FILTER: PO ONLY
             if (search) {
                 filtered = filtered.filter(row => 
                     (row.PO && row.PO.toLowerCase().includes(search))
@@ -555,18 +559,16 @@
             renderDashboard(filtered);
         }
 
-        function renderDashboard(data, isSearch = false) {
-            if(!isSearch) {
-                document.getElementById('total-reports').innerText = data.length;
-                const pendingCount = data.filter(r => r.Status === 'Pending' || r.Status === 'Open').length;
-                document.getElementById('pending-reports').innerText = pendingCount;
-                document.getElementById('closed-reports').innerText = data.filter(r => r.Status === 'Closed').length;
+        function renderDashboard(data) {
+            document.getElementById('total-reports').innerText = data.length;
+            const pendingCount = data.filter(r => r.Status === 'Pending' || r.Status === 'Open').length;
+            document.getElementById('pending-reports').innerText = pendingCount;
+            document.getElementById('closed-reports').innerText = data.filter(r => r.Status === 'Closed').length;
 
-                const total = data.length || 1;
-                document.getElementById('bar-pending').style.width = `${(pendingCount/total)*100}%`;
-                document.getElementById('bar-closed').style.width = `${(data.filter(r => r.Status === 'Closed').length/total)*100}%`;
-                updateCharts(data);
-            }
+            const total = data.length || 1;
+            document.getElementById('bar-pending').style.width = `${(pendingCount/total)*100}%`;
+            document.getElementById('bar-closed').style.width = `${(data.filter(r => r.Status === 'Closed').length/total)*100}%`;
+            updateCharts(data);
 
             const tableBody = document.getElementById('case-table-body');
             tableBody.innerHTML = '';
@@ -602,6 +604,7 @@
                 const tr = document.createElement('tr');
                 tr.className = "bg-white border-b hover:bg-slate-50 transition";
                 
+                // FIXED HEADER & DATA ALIGNMENT
                 tr.innerHTML = `
                     <td class="px-6 py-4 whitespace-nowrap text-slate-500 text-left">${dateStr}</td>
                     <td class="px-6 py-4 text-left font-semibold text-brand-600">${row.PO || '-'}</td>
@@ -641,12 +644,13 @@
                      salesName = row.Sales.replace(phoneMatch[0], '').trim();
                 }
             } else if (row.PhoneSales) {
-                 // Future backend support
+                 phone = row.PhoneSales;
             }
 
             document.getElementById('modal-sales').innerText = salesName;
             document.getElementById('modal-sales-phone').innerText = phone;
             
+            // FIXED: Tombol WA Logic
             const waBtn = document.getElementById('btn-wa-sales');
             if (phone && phone !== '-' && phone.length > 5) {
                 let cleanPhone = phone.replace(/\D/g, '');
@@ -655,9 +659,9 @@
                 }
                 const msg = encodeURIComponent(`Halo ${salesName}, Update untuk case ${row.PO} (Customer: ${row.Customer}): Status sekarang ${row.Status}.`);
                 waBtn.href = `https://wa.me/${cleanPhone}?text=${msg}`;
-                waBtn.classList.remove('hidden');
+                waBtn.classList.remove('hidden'); // Show button
             } else {
-                waBtn.classList.add('hidden');
+                waBtn.classList.add('hidden'); // Hide button
             }
 
             document.getElementById('modal-customer').innerText = row.Customer;
@@ -808,7 +812,6 @@
                 fileData = { name: currentFile.name, type: currentFile.type, content: base64Content };
             } catch (e) { alert("Gagal proses file"); btn.innerHTML = originalText; btn.disabled = false; return; }
 
-            // COMBINE NAME AND PHONE TO SAVE WITHOUT BACKEND CHANGE
             const name = document.getElementById('input-sales').value;
             const phone = document.getElementById('input-phone-sales').value;
             const salesCombined = `${name} [${phone}]`;
@@ -907,6 +910,3 @@
     </script>
 </body>
 </html>
-
-
-
