@@ -49,7 +49,8 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
         /* Status Badge Colors */
-        .status-open { @apply bg-yellow-100 text-yellow-800 border border-yellow-200; }
+        .status-pending { @apply bg-red-100 text-red-800 border border-red-200; }
+        .status-progress { @apply bg-yellow-100 text-yellow-800 border border-yellow-200; }
         .status-closed { @apply bg-green-100 text-green-800 border border-green-200; }
 
         /* Upload Animation */
@@ -62,43 +63,128 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans leading-relaxed overflow-x-hidden">
 
-    <!-- NOTIFICATION TOAST (New Feature) -->
+    <!-- NOTIFICATION TOAST -->
     <div id="toast-notification" class="fixed top-5 right-5 z-[10000] hidden transition-all duration-500 transform translate-x-full opacity-0">
         <div class="flex items-center w-full max-w-sm p-4 bg-white rounded-lg shadow-lg border-l-4 border-green-500">
             <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg">
-                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
-                </svg>
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/></svg>
             </div>
             <div class="ml-3 text-sm font-normal text-slate-700">
                 <span class="font-bold block text-slate-900">Sukses!</span>
                 <span id="toast-message">Data berhasil disimpan.</span>
             </div>
-            <button type="button" class="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8" onclick="hideToast()">
-                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                </svg>
-            </button>
         </div>
     </div>
 
-    <!-- 1. LOGIN OVERLAY (Popup Modal) -->
-    <div id="login-overlay" class="hidden fixed inset-0 bg-slate-900 bg-opacity-60 z-[9999] flex items-center justify-center backdrop-blur-sm transition-opacity">
+    <!-- 1. DETAIL / ACTION MODAL (FIXED MISSING ID) -->
+    <div id="detail-modal" class="hidden fixed inset-0 bg-slate-900 bg-opacity-70 z-[9999] flex items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-100 w-full max-w-4xl max-h-[90vh] overflow-y-auto relative fade-in flex flex-col md:flex-row overflow-hidden">
+            
+            <!-- Left: Informasi Laporan -->
+            <div class="w-full md:w-1/2 p-6 bg-slate-50 border-r border-slate-200 overflow-y-auto">
+                <div class="mb-4">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Informasi Awal</p>
+                    <h3 class="text-xl font-bold text-slate-800" id="modal-id">ID: MCV-...</h3>
+                </div>
+                
+                <div class="space-y-4 text-sm">
+                    <div class="grid grid-cols-3 gap-2 border-b border-slate-200 pb-3">
+                        <div class="text-slate-500 col-span-1">Tanggal</div>
+                        <div class="font-medium col-span-2" id="modal-date">-</div>
+                        
+                        <div class="text-slate-500 col-span-1">Sales</div>
+                        <div class="font-medium col-span-2" id="modal-sales">-</div>
+                        
+                        <div class="text-slate-500 col-span-1">Customer</div>
+                        <div class="font-medium col-span-2" id="modal-customer">-</div>
+                        
+                        <div class="text-slate-500 col-span-1">Project</div>
+                        <div class="font-medium col-span-2" id="modal-project">-</div>
+                    </div>
+
+                    <div class="bg-white p-3 rounded-lg border border-slate-200">
+                        <p class="text-xs text-slate-500 mb-1">Produk & Masalah:</p>
+                        <div class="font-bold text-slate-800" id="modal-product">-</div>
+                        <div class="text-red-600 font-medium mt-1" id="modal-issue">-</div>
+                        
+                        <!-- ADDED MISSING REQUEST FIELD HERE -->
+                        <div class="mt-2 pt-2 border-t border-slate-100">
+                            <span class="text-xs text-slate-500">Permintaan:</span>
+                            <span class="font-medium text-slate-700" id="modal-request">-</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p class="text-xs text-slate-500 mb-1">Kronologi:</p>
+                        <div class="p-3 bg-white rounded-lg border border-slate-200 text-slate-600 italic text-xs leading-relaxed" id="modal-chronology">...</div>
+                    </div>
+
+                    <div class="flex justify-between items-center bg-white p-3 rounded-lg border border-slate-200">
+                        <span class="text-xs text-slate-500">Bukti Dokumentasi:</span>
+                        <span id="modal-evidence">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Form Tindak Lanjut Admin -->
+            <div class="w-full md:w-1/2 p-6 flex flex-col">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <h3 class="text-lg font-bold text-brand-900">Tindak Lanjut QC</h3>
+                        <p class="text-xs text-slate-500">Update status dan catatan teknis.</p>
+                    </div>
+                    <button onclick="closeDetailModal()" class="text-slate-400 hover:text-slate-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+
+                <div class="space-y-4 flex-grow">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Update Status</label>
+                        <select id="modal-status-select" class="w-full rounded-lg border-slate-300 p-2.5 text-sm focus:ring-brand-500 focus:border-brand-500 bg-slate-50 font-medium">
+                            <option value="Pending" class="text-red-600">🔴 Pending (Belum Disentuh)</option>
+                            <option value="On Progress" class="text-yellow-600">🟡 Dikerjakan (On Progress)</option>
+                            <option value="Closed" class="text-green-600">🟢 Closed (Selesai)</option>
+                        </select>
+                    </div>
+
+                    <div class="p-4 bg-brand-50 rounded-xl border border-brand-100 space-y-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-brand-800 mb-1">Analisis Teknis (Root Cause)</label>
+                            <textarea id="modal-admin-analysis" rows="2" class="w-full rounded border-brand-200 p-2 text-xs focus:ring-brand-500" placeholder="Apa penyebab kerusakan sebenarnya?"></textarea>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-xs font-semibold text-brand-800 mb-1">Tindakan Perbaikan</label>
+                            <textarea id="modal-admin-action" rows="2" class="w-full rounded border-brand-200 p-2 text-xs focus:ring-brand-500" placeholder="Apa yang sudah/akan dilakukan?"></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-brand-800 mb-1">Info Logistik (Resi / Teknisi)</label>
+                            <input type="text" id="modal-admin-logistics" class="w-full rounded border-brand-200 p-2 text-xs focus:ring-brand-500" placeholder="Nama Teknisi / No Resi Pengiriman">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-slate-100">
+                    <button onclick="saveCaseUpdate()" id="btn-save-update" class="w-full bg-brand-900 text-white py-3 rounded-lg font-bold hover:bg-brand-800 transition shadow-lg text-sm flex justify-center items-center gap-2 transform active:scale-95 duration-150">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                        <span>Simpan Update</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. LOGIN OVERLAY -->
+    <div id="login-overlay" class="hidden fixed inset-0 bg-slate-900 bg-opacity-60 z-[9998] flex items-center justify-center backdrop-blur-sm transition-opacity">
         <div class="bg-white p-8 rounded-2xl shadow-2xl border border-slate-100 max-w-sm w-full text-center relative fade-in">
             <button onclick="hideLogin()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
-
-            <!-- LOGO IMAGE -->
-            <img src="https://raw.githubusercontent.com/MVI-PDN/Keluhan-Pelanggan/main/microvision-logo.webp" 
-                 alt="Microvision Logo" 
-                 class="h-12 mx-auto mb-6 object-contain"
-                 onerror="this.style.display='none'; document.getElementById('login-logo-text').classList.remove('hidden')">
-            
+            <img src="https://raw.githubusercontent.com/MVI-PDN/Keluhan-Pelanggan/main/microvision-logo.webp" alt="Microvision Logo" class="h-12 mx-auto mb-6 object-contain" onerror="this.style.display='none'; document.getElementById('login-logo-text').classList.remove('hidden')">
             <h1 id="login-logo-text" class="text-4xl font-bold text-brand-900 italic mb-4 tracking-wide hidden">Microvision</h1>
-
             <h2 class="text-lg font-semibold text-slate-600 mb-6 uppercase tracking-wider">Pengaduan Pelanggan</h2>
-            
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <input type="email" id="login-email" required class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none text-sm transition text-center">
                 <button type="submit" class="w-full bg-brand-900 text-white py-3 rounded-lg font-bold hover:bg-brand-800 transition shadow-md text-sm">Masuk</button>
@@ -107,18 +193,13 @@
         </div>
     </div>
 
-    <!-- 2. APLIKASI UTAMA -->
+    <!-- 3. APLIKASI UTAMA -->
     <div id="app-container" class="min-h-screen flex flex-col">
-        
-        <!-- Navigation Bar -->
         <nav class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-16">
                     <div class="flex items-center gap-3">
-                        <img src="https://raw.githubusercontent.com/MVI-PDN/Keluhan-Pelanggan/main/microvision-logo.webp" 
-                             alt="Microvision Logo" 
-                             class="h-8 w-auto object-contain"
-                             onerror="this.style.display='none'; document.getElementById('nav-logo-text').classList.remove('hidden')">
+                        <img src="https://raw.githubusercontent.com/MVI-PDN/Keluhan-Pelanggan/main/microvision-logo.webp" alt="Microvision Logo" class="h-8 w-auto object-contain" onerror="this.style.display='none'; document.getElementById('nav-logo-text').classList.remove('hidden')">
                         <h1 id="nav-logo-text" class="font-bold text-brand-900 text-2xl leading-tight italic tracking-wide hidden">Microvision</h1>
                     </div>
                     <div class="flex items-center space-x-3">
@@ -140,8 +221,7 @@
         </nav>
 
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow">
-
-            <!-- DASHBOARD VIEW -->
+            <!-- DASHBOARD -->
             <section id="dashboard-view" class="hidden space-y-8 fade-in">
                 <div class="flex justify-between items-end bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
                     <div>
@@ -154,21 +234,39 @@
                     </div>
                 </div>
 
-                <!-- Key Metrics -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group">
-                        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Kasus</h3>
-                        <span class="text-3xl font-bold text-brand-600 mt-2 block" id="total-reports">...</span>
+                <!-- Metrics -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Total -->
+                    <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 shadow-sm">
+                        <h3 class="text-xs font-bold text-blue-800 uppercase tracking-wider">Total Kasus</h3>
+                        <span class="text-3xl font-bold text-blue-600 mt-2 block" id="total-reports">...</span>
                     </div>
-                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group">
-                        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Kasus Open (Pending)</h3>
-                        <span class="text-3xl font-bold text-orange-500 mt-2 block" id="pending-reports">...</span>
-                        <div class="w-full bg-slate-100 rounded-full h-1 mt-4"><div id="bar-pending" class="bg-orange-500 h-1 rounded-full" style="width: 0%"></div></div>
+                    
+                    <!-- Pending -->
+                    <div class="bg-red-50 p-4 rounded-xl border border-red-100 shadow-sm">
+                        <h3 class="text-xs font-bold text-red-800 uppercase tracking-wider">Pending</h3>
+                        <span class="text-3xl font-bold text-red-600 mt-2 block" id="pending-reports">...</span>
+                        <div class="w-full bg-red-200 h-1 mt-3 rounded-full overflow-hidden">
+                            <div id="bar-pending" class="bg-red-500 h-full" style="width: 0%"></div>
+                        </div>
                     </div>
-                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group">
-                        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Kasus Closed</h3>
+
+                    <!-- Progress -->
+                    <div class="bg-yellow-50 p-4 rounded-xl border border-yellow-100 shadow-sm">
+                        <h3 class="text-xs font-bold text-yellow-800 uppercase tracking-wider">On Progress</h3>
+                        <span class="text-3xl font-bold text-yellow-600 mt-2 block" id="progress-reports">...</span>
+                        <div class="w-full bg-yellow-200 h-1 mt-3 rounded-full overflow-hidden">
+                            <div id="bar-progress" class="bg-yellow-500 h-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Closed -->
+                    <div class="bg-green-50 p-4 rounded-xl border border-green-100 shadow-sm">
+                        <h3 class="text-xs font-bold text-green-800 uppercase tracking-wider">Closed</h3>
                         <span class="text-3xl font-bold text-green-600 mt-2 block" id="closed-reports">...</span>
-                        <div class="w-full bg-slate-100 rounded-full h-1 mt-4"><div id="bar-closed" class="bg-green-500 h-1 rounded-full" style="width: 0%"></div></div>
+                        <div class="w-full bg-green-200 h-1 mt-3 rounded-full overflow-hidden">
+                            <div id="bar-closed" class="bg-green-500 h-full" style="width: 0%"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -176,23 +274,20 @@
                 <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                     <div class="p-6 border-b border-slate-100 flex justify-between items-center">
                         <h3 class="font-bold text-lg text-slate-800">📋 Antrian Kasus (Live Queue)</h3>
-                        <div class="text-xs px-3 py-1 bg-blue-50 text-blue-700 rounded-full border border-blue-100">Auto-sync</div>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm text-left text-slate-600">
                             <thead class="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-200">
                                 <tr>
                                     <th class="px-6 py-4 font-bold">Tanggal</th>
-                                    <th class="px-6 py-4 font-bold">Project</th>
-                                    <th class="px-6 py-4 font-bold">Sales</th>
+                                    <th class="px-6 py-4 font-bold">Project / Sales</th>
                                     <th class="px-6 py-4 font-bold">Masalah</th>
-                                    <th class="px-6 py-4 font-bold text-center">Bukti</th> 
                                     <th class="px-6 py-4 font-bold text-center">Status</th>
                                     <th class="px-6 py-4 font-bold text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="case-table-body" class="divide-y divide-slate-100">
-                                <tr><td colspan="7" class="px-6 py-8 text-center text-slate-400 italic">Memuat data...</td></tr>
+                                <tr><td colspan="5" class="px-6 py-8 text-center text-slate-400 italic">Memuat data...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -201,11 +296,9 @@
                 <!-- Charts -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="text-lg font-bold text-slate-800 mb-4">Distribusi Kategori</h3>
                         <div class="chart-container"><canvas id="categoryChart"></canvas></div>
                     </div>
                     <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="text-lg font-bold text-slate-800 mb-4">Urgency Trend</h3>
                         <div class="chart-container"><canvas id="urgencyChart"></canvas></div>
                     </div>
                 </div>
@@ -223,62 +316,27 @@
                                 <div class="bg-slate-50 p-6 rounded-lg border border-slate-200">
                                     <h3 class="font-bold text-brand-900 mb-4 text-sm bg-brand-100 inline-block px-2 py-1 rounded">IDENTITAS</h3>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                        <div>
-                                            <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Sales / PIC *</label>
-                                            <input type="text" id="input-sales" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-semibold text-slate-700 mb-1">Tanggal Laporan *</label>
-                                            <input type="date" id="input-date" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500">
-                                        </div>
-                                        <div class="md:col-span-2">
-                                            <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Customer / PT *</label>
-                                            <input type="text" id="input-customer" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500">
-                                        </div>
-                                        <div class="md:col-span-2">
-                                            <label class="block text-sm font-semibold text-slate-700 mb-1">No PO / SPK *</label>
-                                            <input type="text" id="input-po" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500">
-                                        </div>
+                                        <div><label class="block text-sm font-semibold text-slate-700 mb-1">Nama Sales / PIC *</label><input type="text" id="input-sales" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
+                                        <div><label class="block text-sm font-semibold text-slate-700 mb-1">Tanggal Laporan *</label><input type="date" id="input-date" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
+                                        <div class="md:col-span-2"><label class="block text-sm font-semibold text-slate-700 mb-1">Nama Customer / PT *</label><input type="text" id="input-customer" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
+                                        <div class="md:col-span-2"><label class="block text-sm font-semibold text-slate-700 mb-1">No PO / SPK *</label><input type="text" id="input-po" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
                                     </div>
                                 </div>
-
                                 <div class="bg-slate-50 p-6 rounded-lg border border-slate-200">
                                     <h3 class="font-bold text-brand-900 mb-4 text-sm bg-brand-100 inline-block px-2 py-1 rounded">DATA UNIT</h3>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                        <div class="md:col-span-2">
-                                            <label class="block text-sm font-semibold text-slate-700 mb-1">Tipe Produk / Model *</label>
-                                            <input type="text" id="input-product" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500">
-                                        </div>
-                                        <div class="md:col-span-2">
-                                            <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Project / Lokasi *</label>
-                                            <input type="text" id="input-project" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500">
-                                        </div>
-                                        <div class="md:col-span-2">
-                                            <label class="block text-sm font-semibold text-slate-700 mb-1">Serial Number / Batch Modul</label>
-                                            <input type="text" id="input-batch" class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-semibold text-slate-700 mb-1">Jml. Unit Bermasalah *</label>
-                                            <input type="number" id="input-qty-bad" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500">
-                                        </div>
+                                        <div class="md:col-span-2"><label class="block text-sm font-semibold text-slate-700 mb-1">Tipe Produk / Model *</label><input type="text" id="input-product" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500" placeholder="Ex: Videotron P2.5 Indoor"></div>
+                                        <div class="md:col-span-2"><label class="block text-sm font-semibold text-slate-700 mb-1">Nama Project / Lokasi *</label><input type="text" id="input-project" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500" placeholder="Ex: Ruang Rapat Lt. 3"></div>
+                                        <div class="md:col-span-2"><label class="block text-sm font-semibold text-slate-700 mb-1">Serial Number / Batch Modul</label><input type="text" id="input-batch" class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
+                                        <div><label class="block text-sm font-semibold text-slate-700 mb-1">Jml. Unit Bermasalah *</label><input type="number" id="input-qty-bad" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
                                     </div>
                                 </div>
-
                                 <div class="bg-slate-50 p-6 rounded-lg border border-slate-200">
                                     <h3 class="font-bold text-brand-900 mb-4 text-sm bg-brand-100 inline-block px-2 py-1 rounded">DETAIL MASALAH</h3>
                                     <div class="space-y-5">
                                         <div>
                                             <label class="block text-sm font-semibold text-slate-700 mb-1">Kategori Masalah *</label>
-                                            <select id="input-category" required class="w-full rounded border-slate-300 p-2.5 border bg-white focus:ring-brand-500">
-                                                <option value="">-- Pilih --</option>
-                                                <option value="Dead Pixel">Dead Pixel / Lampu Mati</option>
-                                                <option value="Modul Error">Modul Error / Blok Warna</option>
-                                                <option value="Mati Total">Power Supply / Mati Total</option>
-                                                <option value="No Signal">No Signal / Receiving Card</option>
-                                                <option value="Fisik">Kerusakan Fisik / Pecah</option>
-                                                <option value="Software">Software / Config</option>
-                                                <option value="Lainnya">Lainnya</option>
-                                            </select>
+                                            <select id="input-category" required class="w-full rounded border-slate-300 p-2.5 border bg-white focus:ring-brand-500"><option value="">-- Pilih --</option><option value="Dead Pixel">Dead Pixel / Lampu Mati</option><option value="Modul Error">Modul Error / Blok Warna</option><option value="Mati Total">Power Supply / Mati Total</option><option value="No Signal">No Signal / Receiving Card</option><option value="Fisik">Kerusakan Fisik / Pecah</option><option value="Software">Software / Config</option><option value="Lainnya">Lainnya</option></select>
                                         </div>
                                         <div>
                                             <label class="block text-sm font-semibold text-slate-700 mb-1">Kronologi *</label>
@@ -286,65 +344,31 @@
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- CUSTOM UPLOAD CARD -->
                                 <div class="bg-slate-50 p-6 rounded-lg border border-slate-200">
                                     <h3 class="font-bold text-brand-900 mb-4 text-sm bg-brand-100 inline-block px-2 py-1 rounded">BUKTI DOKUMENTASI</h3>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-1">Bukti Foto/Video (Max 5MB) <span class="text-red-600">*</span></label>
-                                        
-                                        <!-- Custom Upload Area -->
                                         <div id="upload-area" class="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:bg-white hover:border-brand-300 transition cursor-pointer relative" onclick="document.getElementById('input-evidence').click()">
                                             <input type="file" id="input-evidence" accept="image/*,video/*" class="hidden" onchange="handleFileSelect(this)">
-                                            
                                             <div id="upload-placeholder" class="space-y-2">
-                                                <div class="mx-auto h-12 w-12 text-slate-300">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                    </svg>
-                                                </div>
-                                                <div class="text-sm text-slate-500 font-medium">Klik untuk upload foto/video</div>
-                                                <p class="text-xs text-slate-400">Support: JPG, PNG, MP4</p>
+                                                <div class="mx-auto h-12 w-12 text-slate-300"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg></div>
+                                                <div class="text-sm text-slate-500 font-medium">Klik untuk upload</div>
                                             </div>
                                         </div>
-
-                                        <!-- Preview State -->
                                         <div id="preview-container" class="hidden mt-4 relative group w-full max-w-xs mx-auto border rounded-lg overflow-hidden preview-wrapper">
                                             <div id="preview-content" class="bg-slate-100 flex items-center justify-center h-48 w-full"></div>
-                                            <!-- Hover Delete Button -->
-                                            <button type="button" onclick="removeFile(event)" class="delete-btn opacity-0 transition-opacity absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 shadow-md z-10" title="Hapus File">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                                            </button>
-                                            <div class="bg-white px-3 py-2 text-xs text-slate-600 truncate border-t" id="filename-display">filename.jpg</div>
+                                            <button type="button" onclick="removeFile(event)" class="delete-btn opacity-0 transition-opacity absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 shadow-md z-10"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
                                         </div>
-
-                                        <p class="text-[10px] text-red-500 mt-2 font-medium flex items-center gap-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                                            Wajib diisi untuk klaim garansi.
-                                        </p>
                                     </div>
                                 </div>
-
                                 <div class="bg-slate-50 p-6 rounded-lg border border-slate-200">
                                     <h3 class="font-bold text-brand-900 mb-4 text-sm bg-brand-100 inline-block px-2 py-1 rounded">TINDAK LANJUT</h3>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                        <div>
-                                            <label class="block text-sm font-semibold text-slate-700 mb-1">Tanggal Kebutuhan</label>
-                                            <input type="date" id="input-need-date" class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-semibold text-slate-700 mb-1">Estimasi Kembali (Max 90 Hari)</label>
-                                            <input type="date" id="input-return-date" class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500">
-                                        </div>
-
+                                        <div><label class="block text-sm font-semibold text-slate-700 mb-1">Tanggal Kebutuhan</label><input type="date" id="input-need-date" class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
+                                        <div><label class="block text-sm font-semibold text-slate-700 mb-1">Estimasi Kembali</label><input type="date" id="input-return-date" class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
                                         <div class="md:col-span-2">
                                             <label class="block text-sm font-semibold text-slate-700 mb-1">Request Customer *</label>
-                                            <select id="input-request" required class="w-full rounded border-slate-300 p-2.5 border bg-white mb-2 focus:ring-brand-500">
-                                                <option value="Service On-site">Kunjungan Teknisi</option>
-                                                <option value="Sparepart">Kirim Sparepart</option>
-                                                <option value="Replace Unit">Ganti Unit Baru</option>
-                                                <option value="Remote">Bantuan Remote</option>
-                                            </select>
+                                            <select id="input-request" required class="w-full rounded border-slate-300 p-2.5 border bg-white mb-2 focus:ring-brand-500"><option value="Service On-site">Kunjungan Teknisi</option><option value="Sparepart">Kirim Sparepart</option><option value="Replace Unit">Ganti Unit Baru</option><option value="Remote">Bantuan Remote</option></select>
                                         </div>
                                         <div class="md:col-span-2">
                                             <label class="block text-sm font-semibold text-slate-700 mb-1">Urgensi (1-5)</label>
@@ -353,30 +377,17 @@
                                         </div>
                                     </div>
                                 </div>
-
                                 <div class="flex justify-end gap-3 pt-4">
                                     <button type="button" onclick="if(isAdmin) switchTab('dashboard')" class="px-6 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors">Batal</button>
-                                    <button type="submit" id="btn-submit" class="px-6 py-2.5 rounded-lg text-sm font-medium bg-brand-900 text-white hover:bg-brand-800 shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 flex items-center justify-center min-w-[140px]">
-                                        <span>Kirim Laporan</span>
-                                    </button>
+                                    <button type="submit" id="btn-submit" class="px-6 py-2.5 rounded-lg text-sm font-medium bg-brand-900 text-white hover:bg-brand-800 shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 flex items-center justify-center min-w-[140px]"><span>Kirim Laporan</span></button>
                                 </div>
                             </form>
                         </div>
                     </div>
-                    
                     <div class="lg:col-span-1">
                         <div class="bg-brand-50 p-6 rounded-xl border border-brand-100 sticky top-24">
-                            <div class="flex items-center gap-2 mb-3">
-                                <span class="text-xl">💡</span>
-                                <h3 class="font-bold text-brand-900">Info Penting</h3>
-                            </div>
-                            <p class="text-sm text-brand-700 mb-4 leading-relaxed">
-                                Pastikan <strong>Serial Number (SN)</strong> dan <strong>Batch Modul</strong> tercatat untuk keperluan klaim garansi.
-                            </p>
-                            <div class="h-px bg-brand-200 my-4"></div>
-                            <p class="text-sm text-brand-700 leading-relaxed">
-                                Gunakan kolom <strong>Nama Project</strong> untuk memudahkan teknisi melacak lokasi.
-                            </p>
+                            <div class="flex items-center gap-2 mb-3"><span class="text-xl">💡</span><h3 class="font-bold text-brand-900">Info Penting</h3></div>
+                            <p class="text-sm text-brand-700 mb-4 leading-relaxed">Pastikan <strong>Serial Number</strong> tercatat untuk klaim garansi.</p>
                         </div>
                     </div>
                 </div>
@@ -384,39 +395,31 @@
         </main>
     </div>
 
-    <!-- LOGIC -->
     <script>
-        // NEW UPDATED SCRIPT URL
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwPOhWrv8_ujtGiTSPC1qaBsmtGckNh4y0_YWDyJMwFg8zPtQsCAdRykAT_VCdx-pfp/exec"; 
         const ADMIN_KEYWORDS = ['admin', 'qc', 'boss', 'spv', 'manager']; 
         let isAdmin = false;
         let currentUser = "";
         let currentFile = null; 
+        let allReports = [];
+        let currentEditingId = null;
 
-        // AUTH & SESSION
         window.addEventListener('load', () => {
             const savedUser = localStorage.getItem('mv_user');
             if (savedUser) {
                 const email = savedUser;
-                document.getElementById('user-display').innerText = email.split('@')[0];
-                
                 if (ADMIN_KEYWORDS.some(role => email.includes(role))) {
                     isAdmin = true;
                     document.getElementById('nav-dashboard').classList.remove('hidden');
                     document.getElementById('btn-login-trigger').classList.add('hidden');
                     document.getElementById('user-panel').classList.remove('hidden');
                     document.getElementById('role-display').innerText = "Administrator";
+                    document.getElementById('user-display').innerText = email.split('@')[0];
                     fetchData(); 
                 }
             }
-            
-            // Set Date Limits
-            const today = new Date();
-            const maxDate = new Date();
-            maxDate.setDate(today.getDate() + 90);
-            const returnDateInput = document.getElementById('input-return-date');
-            returnDateInput.min = today.toISOString().split('T')[0];
-            returnDateInput.max = maxDate.toISOString().split('T')[0];
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('input-date').value = today;
         });
 
         function showLogin() { document.getElementById('login-overlay').classList.remove('hidden'); }
@@ -426,8 +429,6 @@
             e.preventDefault();
             const email = document.getElementById('login-email').value.toLowerCase();
             hideLogin();
-            document.getElementById('user-display').innerText = email.split('@')[0];
-
             if (ADMIN_KEYWORDS.some(role => email.includes(role))) {
                 isAdmin = true;
                 localStorage.setItem('mv_user', email);
@@ -435,48 +436,37 @@
                 document.getElementById('btn-login-trigger').classList.add('hidden');
                 document.getElementById('user-panel').classList.remove('hidden');
                 document.getElementById('role-display').innerText = "Administrator";
+                document.getElementById('user-display').innerText = email.split('@')[0];
                 switchTab('dashboard'); 
                 fetchData(); 
             } else {
-                alert("Akses Dashboard ditolak. Email tidak terdaftar sebagai Admin/QC.");
+                alert("Akses Dashboard ditolak.");
             }
         }
 
-        function logout() {
-            localStorage.removeItem('mv_user');
-            location.reload(); 
-        }
+        function logout() { localStorage.removeItem('mv_user'); location.reload(); }
 
         function switchTab(tabName) {
             const dashboard = document.getElementById('dashboard-view');
             const form = document.getElementById('form-view');
             const btnDash = document.getElementById('nav-dashboard');
             const btnForm = document.getElementById('nav-form');
-
             if (tabName === 'dashboard') {
                 if (!isAdmin) return; 
                 dashboard.classList.remove('hidden');
                 form.classList.add('hidden');
-                btnDash.className = "px-4 py-2 rounded-md text-sm font-medium bg-brand-50 text-brand-600 border border-brand-100 transition-colors shadow-sm";
-                btnForm.className = "px-4 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors";
+                btnDash.classList.add('bg-brand-50', 'text-brand-600', 'border-brand-100');
+                btnForm.classList.remove('bg-brand-50', 'text-brand-600', 'border-brand-100');
                 fetchData(); 
             } else {
                 dashboard.classList.add('hidden');
                 form.classList.remove('hidden');
-                btnForm.className = "px-4 py-2 rounded-md text-sm font-medium bg-brand-50 text-brand-600 border border-brand-100 transition-colors shadow-sm";
-                btnDash.className = "px-4 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors";
-                document.getElementById('input-date').valueAsDate = new Date();
+                btnForm.classList.add('bg-brand-50', 'text-brand-600', 'border-brand-100');
+                btnDash.classList.remove('bg-brand-50', 'text-brand-600', 'border-brand-100');
             }
         }
 
-        // FETCH DATA
         async function fetchData() {
-            if (!GOOGLE_SCRIPT_URL) return;
-            const tableBody = document.getElementById('case-table-body');
-            if(tableBody.children.length <= 1) {
-                tableBody.innerHTML = '<tr><td colspan="7" class="px-6 py-8 text-center text-slate-500">⏳ Mengambil data...</td></tr>';
-            }
-
             try {
                 const response = await fetch(`${GOOGLE_SCRIPT_URL}?t=${new Date().getTime()}`, { redirect: "follow" }); 
                 const data = await response.json();
@@ -484,19 +474,20 @@
                 renderDashboard(data);
             } catch (error) {
                 console.error("Fetch Error:", error);
-                tableBody.innerHTML = '<tr><td colspan="7" class="px-6 py-8 text-center text-red-500 bg-red-50 rounded-lg">Gagal koneksi. Periksa Permission Script ("Anyone") atau CORS.</td></tr>';
             }
         }
 
         function renderDashboard(data) {
             document.getElementById('total-reports').innerText = data.length;
-            const pendingCount = data.filter(r => r.Status !== 'Closed').length;
+            const pendingCount = data.filter(r => r.Status === 'Pending' || r.Status === 'Open').length;
             document.getElementById('pending-reports').innerText = pendingCount;
-            document.getElementById('closed-reports').innerText = data.length - pendingCount;
+            document.getElementById('progress-reports').innerText = data.filter(r => r.Status === 'On Progress').length;
+            document.getElementById('closed-reports').innerText = data.filter(r => r.Status === 'Closed').length;
 
             const total = data.length || 1;
             document.getElementById('bar-pending').style.width = `${(pendingCount/total)*100}%`;
-            document.getElementById('bar-closed').style.width = `${((data.length - pendingCount)/total)*100}%`;
+            document.getElementById('bar-progress').style.width = `${(data.filter(r => r.Status === 'On Progress').length/total)*100}%`;
+            document.getElementById('bar-closed').style.width = `${(data.filter(r => r.Status === 'Closed').length/total)*100}%`;
 
             const tableBody = document.getElementById('case-table-body');
             tableBody.innerHTML = '';
@@ -504,33 +495,35 @@
             const sortedData = [...data].sort((a, b) => new Date(b.Timestamp) - new Date(a.Timestamp));
 
             sortedData.forEach(row => {
-                const id = row.id;
-                const isClosed = row.Status === 'Closed';
+                let statusColor = 'status-pending'; 
+                let statusText = row.Status;
+
+                if (statusText === 'Open') {
+                    statusText = 'Pending';
+                } else if (statusText === 'On Progress') {
+                    statusColor = 'status-progress';
+                } else if (statusText === 'Closed') {
+                    statusColor = 'status-closed';
+                }
+
                 let dateStr = '-';
                 if(row.Date) {
                     const d = new Date(row.Date);
                     if(!isNaN(d.getTime())) dateStr = d.toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'});
                 }
 
-                // Evidence Link
-                const evidenceLink = (row.Evidence && row.Evidence !== '-' && !row.Evidence.startsWith('Error')) 
-                    ? `<a href="${row.Evidence}" target="_blank" class="text-blue-600 hover:underline">Lihat</a>`
-                    : '<span class="text-slate-400">-</span>';
-
                 const tr = document.createElement('tr');
                 tr.className = "bg-white border-b hover:bg-slate-50 transition";
                 tr.innerHTML = `
                     <td class="px-6 py-4 whitespace-nowrap text-slate-500">${dateStr}</td>
-                    <td class="px-6 py-4"><div class="text-sm font-bold text-slate-800">${row.Project || '-'}</div><div class="text-xs text-slate-500">${row.Product || ''}</div></td>
+                    <td class="px-6 py-4"><div class="text-sm font-bold text-slate-800">${row.Project || '-'}</div></td>
                     <td class="px-6 py-4 text-slate-600">${row.Sales}</td>
-                    <td class="px-6 py-4"><span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-slate-100 text-slate-600 mb-1">${row.Category}</span></td>
-                    <td class="px-6 py-4 text-center text-xs">${evidenceLink}</td>
-                    <td class="px-6 py-4 text-center"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${isClosed ? 'status-closed' : 'status-open'}">${isClosed ? 'Closed' : 'Open'}</span></td>
+                    <td class="px-6 py-4"><div class="text-sm font-medium text-slate-800">${row.Category}</div><div class="text-xs text-slate-500 truncate max-w-[150px]">${row.Chronology}</div></td>
+                    <td class="px-6 py-4 text-center"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColor}">${statusText || 'Pending'}</span></td>
                     <td class="px-6 py-4 text-center">
-                        ${!isClosed ? 
-                            `<button onclick="updateStatus('${id}', 'Closed')" class="text-xs font-medium text-green-600 hover:text-green-800 border border-green-200 bg-green-50 hover:bg-green-100 px-3 py-1 rounded-md transition">✅ Close</button>` : 
-                            `<button onclick="updateStatus('${id}', 'Open')" class="text-xs font-medium text-slate-500 hover:text-slate-700 border border-slate-200 hover:bg-slate-100 px-3 py-1 rounded-md transition">↩ Re-open</button>`
-                        }
+                        <button onclick="openDetailModal('${row.id}')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-md border border-slate-300 font-medium transition flex items-center gap-1 mx-auto">
+                           📝 Detail & Proses
+                        </button>
                     </td>
                 `;
                 tableBody.appendChild(tr);
@@ -538,49 +531,113 @@
             updateCharts(data);
         }
 
-        async function updateStatus(id, newStatus) {
-            if(!confirm(`Ubah status menjadi ${newStatus}?`)) return;
-            const payload = { action: 'update_status', id: id, status: newStatus };
-            try {
-                await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
-                setTimeout(fetchData, 2000); 
-            } catch(e) { alert("Gagal update status."); }
-        }
+        // MODAL FUNCTIONS
+        function openDetailModal(id) {
+            const row = allReports.find(r => r.id == id);
+            if(!row) return;
 
-        // --- TOAST NOTIFICATION ---
-        function showToast() {
-            const toast = document.getElementById('toast-notification');
-            toast.classList.remove('hidden');
-            // Trigger reflow
-            void toast.offsetWidth;
-            toast.classList.remove('translate-x-full', 'opacity-0');
+            currentEditingId = id;
+            document.getElementById('modal-id').innerText = `ID: ${id}`;
+            document.getElementById('modal-date').innerText = row.Date ? new Date(row.Date).toLocaleDateString() : '-';
+            document.getElementById('modal-sales').innerText = row.Sales;
+            document.getElementById('modal-customer').innerText = row.Customer;
+            document.getElementById('modal-project').innerText = row.Project;
+            document.getElementById('modal-product').innerText = row.Product;
+            document.getElementById('modal-issue').innerText = row.Category;
+            document.getElementById('modal-request').innerText = row.Request;
+            document.getElementById('modal-chronology').innerText = row.Chronology;
             
-            // Auto hide
-            setTimeout(hideToast, 5000);
+            const evidenceContainer = document.getElementById('modal-evidence');
+            if (row.Evidence && row.Evidence.startsWith('http')) {
+                evidenceContainer.innerHTML = `<a href="${row.Evidence}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg> Buka Foto/Video</a>`;
+            } else {
+                evidenceContainer.innerHTML = '<span class="text-slate-400">Tidak ada file</span>';
+            }
+
+            let currentStatus = row.Status;
+            if(currentStatus === 'Open') currentStatus = 'Pending';
+            document.getElementById('modal-status-select').value = currentStatus || 'Pending';
+            
+            document.getElementById('modal-admin-analysis').value = "";
+            document.getElementById('modal-admin-action').value = "";
+            document.getElementById('modal-admin-logistics').value = "";
+
+            document.getElementById('detail-modal').classList.remove('hidden');
         }
 
-        function hideToast() {
-            const toast = document.getElementById('toast-notification');
-            toast.classList.add('translate-x-full', 'opacity-0');
-            setTimeout(() => {
-                toast.classList.add('hidden');
-            }, 500); // Wait for transition
+        function closeDetailModal() {
+            document.getElementById('detail-modal').classList.add('hidden');
+            currentEditingId = null;
         }
 
-        // --- FILE HANDLING ---
+        async function saveCaseUpdate() {
+            if(!currentEditingId) return;
+
+            const newStatus = document.getElementById('modal-status-select').value;
+            const analysis = document.getElementById('modal-admin-analysis').value;
+            const action = document.getElementById('modal-admin-action').value;
+            const logistics = document.getElementById('modal-admin-logistics').value;
+            
+            let combinedNotes = "";
+            if(analysis) combinedNotes += `[Analisis: ${analysis}] `;
+            if(action) combinedNotes += `[Tindakan: ${action}] `;
+            if(logistics) combinedNotes += `[Logistik: ${logistics}]`;
+            
+            const btn = document.getElementById('btn-save-update');
+            const originalText = btn.innerHTML;
+
+            btn.innerHTML = `<div class="spinner mr-2"></div> Menyimpan...`;
+            btn.disabled = true;
+
+            const payload = {
+                action: 'update_case',
+                id: currentEditingId,
+                status: newStatus,
+                notes: combinedNotes
+            };
+
+            try {
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const row = allReports.find(r => r.id == currentEditingId);
+                if(row) {
+                    row.Status = newStatus;
+                    row.AdminNotes = combinedNotes;
+                }
+                
+                const toast = document.getElementById('toast-notification');
+                toast.classList.remove('hidden');
+                setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 100);
+                setTimeout(() => {
+                    toast.classList.add('translate-x-full', 'opacity-0');
+                    setTimeout(() => toast.classList.add('hidden'), 500);
+                }, 3000);
+
+                closeDetailModal();
+                renderDashboard(allReports);
+                setTimeout(fetchData, 2000);
+            } catch(e) {
+                alert("Gagal update: " + e.message);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
         function handleFileSelect(input) {
             if (input.files && input.files[0]) {
                 const file = input.files[0];
-                if (file.size > 5 * 1024 * 1024) {
-                    alert("Ukuran file terlalu besar! Maksimal 5MB.");
-                    input.value = ''; return;
-                }
+                if (file.size > 5 * 1024 * 1024) { alert("Max 5MB"); input.value = ''; return; }
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const previewContent = document.getElementById('preview-content');
                     if (file.type.startsWith('image/')) previewContent.innerHTML = `<img src="${e.target.result}" class="h-full w-full object-cover">`;
                     else if (file.type.startsWith('video/')) previewContent.innerHTML = `<video src="${e.target.result}" class="h-full w-full object-cover" controls></video>`;
-                    
                     document.getElementById('filename-display').innerText = file.name;
                     document.getElementById('upload-area').classList.add('hidden');
                     document.getElementById('preview-container').classList.remove('hidden');
@@ -589,7 +646,7 @@
                 reader.readAsDataURL(file);
             }
         }
-
+        
         function removeFile(event) {
             if(event) event.stopPropagation();
             document.getElementById('input-evidence').value = ''; 
@@ -615,24 +672,13 @@
             btn.innerHTML = `<div class="spinner mr-2"></div> Mengirim...`;
             btn.disabled = true;
 
-            // VALIDATION
-            if (!currentFile) {
-                alert("Wajib upload bukti Foto/Video!");
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                return;
-            }
+            if (!currentFile) { alert("Wajib upload bukti!"); btn.innerHTML = originalText; btn.disabled = false; return; }
 
             let fileData = null;
             try {
                 const base64Content = await getBase64(currentFile);
                 fileData = { name: currentFile.name, type: currentFile.type, content: base64Content };
-            } catch (e) {
-                alert("Gagal memproses file.");
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                return;
-            }
+            } catch (e) { alert("Gagal proses file"); btn.innerHTML = originalText; btn.disabled = false; return; }
 
             const formData = {
                 sales: document.getElementById('input-sales').value,
@@ -662,72 +708,25 @@
                     body: JSON.stringify(payload)
                 })
                 .then(() => {
-                    // Show Notification Toast
-                    showToast();
-                    
+                    const toast = document.getElementById('toast-notification');
+                    toast.classList.remove('hidden');
+                    setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 100);
+                    setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.classList.add('hidden'), 500); }, 3000);
+
                     event.target.reset();
                     removeFile(); 
                     btn.innerHTML = originalText;
                     btn.disabled = false;
                     if(isAdmin) { switchTab('dashboard'); setTimeout(fetchData, 2000); }
                 })
-                .catch(err => {
-                    alert("Gagal kirim.");
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                });
-            } else {
-                alert("URL Script belum diset.");
-                btn.innerHTML = originalText;
-                btn.disabled = false;
+                .catch(err => { alert("Gagal kirim."); btn.innerHTML = originalText; btn.disabled = false; });
             }
-        }
-
-        let catChart = null;
-        let urgChart = null;
-
-        function updateCharts(data) {
-            const catCounts = {};
-            const urgCounts = [0,0,0,0,0]; 
-
-            data.forEach(r => {
-                const cat = r.Category || 'Lainnya';
-                catCounts[cat] = (catCounts[cat] || 0) + 1;
-                const urg = parseInt(r.Urgency);
-                if(urg >=1 && urg <=5) urgCounts[urg-1]++;
-            });
-
-            const ctxCat = document.getElementById('categoryChart').getContext('2d');
-            if(catChart) catChart.destroy();
-            catChart = new Chart(ctxCat, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(catCounts),
-                    datasets: [{ label: 'Jumlah Kasus', data: Object.values(catCounts), backgroundColor: '#0ea5e9', borderRadius: 6 }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false} } }
-            });
-
-            const ctxUrg = document.getElementById('urgencyChart').getContext('2d');
-            if(urgChart) urgChart.destroy();
-            urgChart = new Chart(ctxUrg, {
-                type: 'line',
-                data: {
-                    labels: ['Low', 'Normal', 'Medium', 'High', 'Urgent'],
-                    datasets: [{ label: 'Frekuensi Urgensi', data: urgCounts, borderColor: '#f97316', backgroundColor: 'rgba(249, 115, 22, 0.1)', fill: true, tension: 0.4 }]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
         }
 
         function downloadExcel() {
-            if (!allReports || allReports.length === 0) {
-                alert("Belum ada data untuk didownload.");
-                return;
-            }
+            if (!allReports || allReports.length === 0) return alert("Belum ada data.");
             const headers = Object.keys(allReports[0]);
-            const csvRows = [];
-            csvRows.push(headers.join(','));
+            const csvRows = [headers.join(',')];
             for (const row of allReports) {
                 const values = headers.map(header => {
                     const escaped = ('' + row[header]).replace(/"/g, '\\"'); 
@@ -735,8 +734,7 @@
                 });
                 csvRows.push(values.join(','));
             }
-            const csvData = csvRows.join('\n');
-            const blob = new Blob([csvData], { type: 'text/csv' });
+            const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.setAttribute('hidden', '');
@@ -747,14 +745,32 @@
             document.body.removeChild(a);
         }
 
-        document.getElementById('input-urgency').addEventListener('input', function(e) {
-            document.getElementById('urgency-val').innerText = e.target.value;
-        });
-        document.getElementById('input-date').valueAsDate = new Date();
+        function updateCharts(data) {
+            const catCounts = {};
+            const urgCounts = [0,0,0,0,0]; 
+            data.forEach(r => {
+                const cat = r.Category || 'Lainnya';
+                catCounts[cat] = (catCounts[cat] || 0) + 1;
+                const urg = parseInt(r.Urgency);
+                if(urg >=1 && urg <=5) urgCounts[urg-1]++;
+            });
+
+            if(window.catChart) window.catChart.destroy();
+            window.catChart = new Chart(document.getElementById('categoryChart').getContext('2d'), {
+                type: 'bar',
+                data: { labels: Object.keys(catCounts), datasets: [{ label: 'Jumlah', data: Object.values(catCounts), backgroundColor: '#0ea5e9' }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false} } }
+            });
+
+            if(window.urgChart) window.urgChart.destroy();
+            window.urgChart = new Chart(document.getElementById('urgencyChart').getContext('2d'), {
+                type: 'line',
+                data: { labels: ['Low', 'Normal', 'Medium', 'High', 'Urgent'], datasets: [{ label: 'Level', data: urgCounts, borderColor: '#f97316', backgroundColor: 'rgba(249, 115, 22, 0.1)', fill: true }] },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+        
+        document.getElementById('input-urgency').addEventListener('input', function(e) { document.getElementById('urgency-val').innerText = e.target.value; });
     </script>
 </body>
 </html>
-
-
-
-
