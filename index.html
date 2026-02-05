@@ -95,7 +95,7 @@
                         <div class="text-slate-500 col-span-1">Sales</div>
                         <div class="font-medium col-span-2" id="modal-sales">-</div>
 
-                        <!-- UPDATED: Tombol WA Ada di Sini -->
+                        <!-- Tombol WA -->
                         <div class="text-slate-500 col-span-1">No HP (WA)</div>
                         <div class="font-medium col-span-2 flex items-center gap-2">
                             <span id="modal-sales-phone" class="text-slate-700">-</span>
@@ -273,7 +273,7 @@
 
                 <!-- QUEUE LIST -->
                 <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                    <div class="p-6 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div class="p-6 border-b border-slate-100 flex justify-between items-center">
                         <h3 class="font-bold text-lg text-slate-800">📋 Antrian Kasus (Live Queue)</h3>
                         <div class="relative w-full md:w-64">
                             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -286,18 +286,17 @@
                         <table class="w-full text-sm text-left text-slate-600">
                             <thead class="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-200">
                                 <tr>
-                                    <th class="px-6 py-4 font-bold text-left">Tanggal</th>
-                                    <th class="px-6 py-4 font-bold text-left">No PO / SPK</th>
-                                    <th class="px-6 py-4 font-bold text-left">Project</th>
-                                    <th class="px-6 py-4 font-bold text-left">Sales</th>
-                                    <th class="px-6 py-4 font-bold text-left">Masalah</th>
+                                    <th class="px-6 py-4 font-bold">Tanggal</th>
+                                    <th class="px-6 py-4 font-bold">Project</th>
+                                    <th class="px-6 py-4 font-bold">Sales</th>
+                                    <th class="px-6 py-4 font-bold">Masalah</th>
                                     <th class="px-6 py-4 font-bold text-center">Bukti</th> 
                                     <th class="px-6 py-4 font-bold text-center">Status</th>
                                     <th class="px-6 py-4 font-bold text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="case-table-body" class="divide-y divide-slate-100">
-                                <tr><td colspan="8" class="px-6 py-8 text-center text-slate-400 italic">Memuat data...</td></tr>
+                                <tr><td colspan="7" class="px-6 py-8 text-center text-slate-400 italic">Memuat data...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -373,10 +372,10 @@
                                         <div id="preview-container" class="hidden mt-4 relative group w-full max-w-xs mx-auto border rounded-lg overflow-hidden preview-wrapper">
                                             <div id="preview-content" class="bg-slate-100 flex items-center justify-center h-48 w-full"></div>
                                             <button type="button" onclick="removeFile(event)" class="delete-btn opacity-0 transition-opacity absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 shadow-md z-10"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                                            <div class="bg-white px-3 py-2 text-xs text-slate-600 truncate border-t" id="filename-display">filename.jpg</div>
                                         </div>
                                     </div>
                                 </div>
-
                                 <div class="bg-slate-50 p-6 rounded-lg border border-slate-200">
                                     <h3 class="font-bold text-brand-900 mb-4 text-sm bg-brand-100 inline-block px-2 py-1 rounded">TINDAK LANJUT</h3>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -493,7 +492,7 @@
             }
         }
 
-        // Updated Search Function (PO Only)
+        // Search Function
         function handleSearch() {
             const query = document.getElementById('search-input').value.toLowerCase();
             const filteredData = allReports.filter(row => 
@@ -508,6 +507,10 @@
                 const pendingCount = data.filter(r => r.Status === 'Pending' || r.Status === 'Open').length;
                 document.getElementById('pending-reports').innerText = pendingCount;
                 document.getElementById('closed-reports').innerText = data.filter(r => r.Status === 'Closed').length;
+
+                const total = data.length || 1;
+                document.getElementById('bar-pending').style.width = `${(pendingCount/total)*100}%`;
+                document.getElementById('bar-closed').style.width = `${(data.filter(r => r.Status === 'Closed').length/total)*100}%`;
                 updateCharts(data);
             }
 
@@ -572,31 +575,16 @@
             document.getElementById('modal-display-po').innerText = row.PO || '-'; 
             document.getElementById('modal-date').innerText = row.Date ? new Date(row.Date).toLocaleDateString() : '-';
             document.getElementById('modal-sales').innerText = row.Sales;
-            // UPDATED: Show Phone number in modal and add WA Button
+            
             const phone = row.PhoneSales || '-';
-            
-            // Render Phone text
-            const phoneContainer = document.getElementById('modal-sales-phone');
-            phoneContainer.innerHTML = phone; // Reset content first
-            
-            // Add WA Button logic
-            // Check if we have a button container or create one. 
-            // In the HTML I changed the structure to: 
-            // <span id="modal-sales-phone" class="text-slate-700">-</span>
-            // <a id="btn-wa-sales" ...>Chat</a>
-            // So we need to update the span text and the anchor href.
-            
             document.getElementById('modal-sales-phone').innerText = phone;
             
             const waBtn = document.getElementById('btn-wa-sales');
             if (phone && phone !== '-' && phone.length > 5) {
-                // Basic cleanup for WA link (08x -> 628x)
                 let cleanPhone = phone.replace(/\D/g, '');
                 if (cleanPhone.startsWith('0')) {
                     cleanPhone = '62' + cleanPhone.substring(1);
                 }
-                
-                // Pre-filled message
                 const msg = encodeURIComponent(`Halo ${row.Sales}, Update untuk case ${row.PO} (Customer: ${row.Customer}): Status sekarang ${row.Status}.`);
                 waBtn.href = `https://wa.me/${cleanPhone}?text=${msg}`;
                 waBtn.classList.remove('hidden');
