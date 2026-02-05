@@ -50,7 +50,6 @@
         
         /* Status Badge Colors */
         .status-pending { @apply bg-red-100 text-red-800 border border-red-200; }
-        .status-progress { @apply bg-yellow-100 text-yellow-800 border border-yellow-200; }
         .status-closed { @apply bg-green-100 text-green-800 border border-green-200; }
 
         /* Upload Animation */
@@ -76,7 +75,7 @@
         </div>
     </div>
 
-    <!-- 1. DETAIL / ACTION MODAL (FIXED MISSING ID) -->
+    <!-- 1. DETAIL / ACTION MODAL -->
     <div id="detail-modal" class="hidden fixed inset-0 bg-slate-900 bg-opacity-70 z-[9999] flex items-center justify-center backdrop-blur-sm p-4">
         <div class="bg-white rounded-2xl shadow-2xl border border-slate-100 w-full max-w-4xl max-h-[90vh] overflow-y-auto relative fade-in flex flex-col md:flex-row overflow-hidden">
             
@@ -106,8 +105,6 @@
                         <p class="text-xs text-slate-500 mb-1">Produk & Masalah:</p>
                         <div class="font-bold text-slate-800" id="modal-product">-</div>
                         <div class="text-red-600 font-medium mt-1" id="modal-issue">-</div>
-                        
-                        <!-- ADDED MISSING REQUEST FIELD HERE -->
                         <div class="mt-2 pt-2 border-t border-slate-100">
                             <span class="text-xs text-slate-500">Permintaan:</span>
                             <span class="font-medium text-slate-700" id="modal-request">-</span>
@@ -131,7 +128,7 @@
                 <div class="flex justify-between items-start mb-6">
                     <div>
                         <h3 class="text-lg font-bold text-brand-900">Tindak Lanjut QC</h3>
-                        <p class="text-xs text-slate-500">Update status dan catatan teknis.</p>
+                        <p class="text-xs text-slate-500">Ubah status ke Closed untuk mengisi laporan.</p>
                     </div>
                     <button onclick="closeDetailModal()" class="text-slate-400 hover:text-slate-600">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -139,37 +136,47 @@
                 </div>
 
                 <div class="space-y-4 flex-grow">
+                    <!-- Status Dropdown (Updated Options) -->
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Update Status</label>
-                        <select id="modal-status-select" class="w-full rounded-lg border-slate-300 p-2.5 text-sm focus:ring-brand-500 focus:border-brand-500 bg-slate-50 font-medium">
-                            <option value="Pending" class="text-red-600">🔴 Pending (Belum Disentuh)</option>
-                            <option value="On Progress" class="text-yellow-600">🟡 Dikerjakan (On Progress)</option>
+                        <select id="modal-status-select" onchange="toggleAdminFields()" class="w-full rounded-lg border-slate-300 p-2.5 text-sm focus:ring-brand-500 focus:border-brand-500 bg-slate-50 font-medium">
+                            <option value="Pending" class="text-red-600">🔴 Pending</option>
                             <option value="Closed" class="text-green-600">🟢 Closed (Selesai)</option>
                         </select>
                     </div>
 
-                    <div class="p-4 bg-brand-50 rounded-xl border border-brand-100 space-y-3">
+                    <!-- Isian Admin (Hidden by default, shown when Closed) -->
+                    <div id="admin-fields-container" class="hidden p-4 bg-brand-50 rounded-xl border border-brand-100 space-y-3 transition-all duration-300">
+                        <!-- Tanggal Update (Otomatis Hari Ini) -->
                         <div>
-                            <label class="block text-xs font-semibold text-brand-800 mb-1">Analisis Teknis (Root Cause)</label>
-                            <textarea id="modal-admin-analysis" rows="2" class="w-full rounded border-brand-200 p-2 text-xs focus:ring-brand-500" placeholder="Apa penyebab kerusakan sebenarnya?"></textarea>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-xs font-semibold text-brand-800 mb-1">Tindakan Perbaikan</label>
-                            <textarea id="modal-admin-action" rows="2" class="w-full rounded border-brand-200 p-2 text-xs focus:ring-brand-500" placeholder="Apa yang sudah/akan dilakukan?"></textarea>
+                            <label class="block text-xs font-semibold text-brand-800 mb-1">Tanggal Update</label>
+                            <input type="date" id="modal-update-date" class="w-full rounded border-brand-200 p-2 text-sm bg-white text-slate-600" readonly>
                         </div>
 
+                        <!-- No PO / SPK (Referensi dari data Sales) -->
                         <div>
-                            <label class="block text-xs font-semibold text-brand-800 mb-1">Info Logistik (Resi / Teknisi)</label>
-                            <input type="text" id="modal-admin-logistics" class="w-full rounded border-brand-200 p-2 text-xs focus:ring-brand-500" placeholder="Nama Teknisi / No Resi Pengiriman">
+                            <label class="block text-xs font-semibold text-brand-800 mb-1">No PO / SPK (Referensi)</label>
+                            <input type="text" id="modal-ref-po" class="w-full rounded border-brand-200 p-2 text-sm bg-slate-100 text-slate-500" readonly>
                         </div>
+
+                        <!-- Catatan Admin -->
+                        <div>
+                            <label class="block text-xs font-semibold text-brand-800 mb-1">Catatan Penyelesaian</label>
+                            <textarea id="modal-admin-notes" rows="6" class="w-full rounded border-brand-200 p-2.5 text-sm focus:ring-brand-500 leading-relaxed" placeholder="Tulis analisis kerusakan, tindakan yang diambil, atau info pengiriman unit di sini..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- Placeholder when Pending -->
+                    <div id="pending-placeholder" class="p-6 text-center text-slate-400 border-2 border-dashed border-slate-200 rounded-xl">
+                        <p class="text-sm">Status masih <strong>Pending</strong>.</p>
+                        <p class="text-xs">Ubah ke <strong>Closed</strong> untuk mengisi data penyelesaian.</p>
                     </div>
                 </div>
 
                 <div class="mt-6 pt-4 border-t border-slate-100">
                     <button onclick="saveCaseUpdate()" id="btn-save-update" class="w-full bg-brand-900 text-white py-3 rounded-lg font-bold hover:bg-brand-800 transition shadow-lg text-sm flex justify-center items-center gap-2 transform active:scale-95 duration-150">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
-                        <span>Simpan Update</span>
+                        <span>Simpan Perubahan</span>
                     </button>
                 </div>
             </div>
@@ -234,39 +241,21 @@
                     </div>
                 </div>
 
-                <!-- Metrics -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <!-- Total -->
-                    <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 shadow-sm">
+                <!-- Metrics (Reduced to 3 Columns) -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-blue-50 p-6 rounded-xl border border-blue-100 shadow-sm">
                         <h3 class="text-xs font-bold text-blue-800 uppercase tracking-wider">Total Kasus</h3>
                         <span class="text-3xl font-bold text-blue-600 mt-2 block" id="total-reports">...</span>
                     </div>
-                    
-                    <!-- Pending -->
-                    <div class="bg-red-50 p-4 rounded-xl border border-red-100 shadow-sm">
+                    <div class="bg-red-50 p-6 rounded-xl border border-red-100 shadow-sm">
                         <h3 class="text-xs font-bold text-red-800 uppercase tracking-wider">Pending</h3>
                         <span class="text-3xl font-bold text-red-600 mt-2 block" id="pending-reports">...</span>
-                        <div class="w-full bg-red-200 h-1 mt-3 rounded-full overflow-hidden">
-                            <div id="bar-pending" class="bg-red-500 h-full" style="width: 0%"></div>
-                        </div>
+                        <div class="w-full bg-red-200 h-1 mt-3 rounded-full overflow-hidden"><div id="bar-pending" class="bg-red-500 h-full" style="width: 0%"></div></div>
                     </div>
-
-                    <!-- Progress -->
-                    <div class="bg-yellow-50 p-4 rounded-xl border border-yellow-100 shadow-sm">
-                        <h3 class="text-xs font-bold text-yellow-800 uppercase tracking-wider">On Progress</h3>
-                        <span class="text-3xl font-bold text-yellow-600 mt-2 block" id="progress-reports">...</span>
-                        <div class="w-full bg-yellow-200 h-1 mt-3 rounded-full overflow-hidden">
-                            <div id="bar-progress" class="bg-yellow-500 h-full" style="width: 0%"></div>
-                        </div>
-                    </div>
-
-                    <!-- Closed -->
-                    <div class="bg-green-50 p-4 rounded-xl border border-green-100 shadow-sm">
+                    <div class="bg-green-50 p-6 rounded-xl border border-green-100 shadow-sm">
                         <h3 class="text-xs font-bold text-green-800 uppercase tracking-wider">Closed</h3>
                         <span class="text-3xl font-bold text-green-600 mt-2 block" id="closed-reports">...</span>
-                        <div class="w-full bg-green-200 h-1 mt-3 rounded-full overflow-hidden">
-                            <div id="bar-closed" class="bg-green-500 h-full" style="width: 0%"></div>
-                        </div>
+                        <div class="w-full bg-green-200 h-1 mt-3 rounded-full overflow-hidden"><div id="bar-closed" class="bg-green-500 h-full" style="width: 0%"></div></div>
                     </div>
                 </div>
 
@@ -396,7 +385,7 @@
     </div>
 
     <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwPOhWrv8_ujtGiTSPC1qaBsmtGckNh4y0_YWDyJMwFg8zPtQsCAdRykAT_VCdx-pfp/exec"; 
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby0oLg4X97qSQxG9qrBreWwtZrDQFEczIgi22RDciCyJhRd8GFw7Ymc4XjZNPjYw0qOXQ/exec"; 
         const ADMIN_KEYWORDS = ['admin', 'qc', 'boss', 'spv', 'manager']; 
         let isAdmin = false;
         let currentUser = "";
@@ -481,12 +470,10 @@
             document.getElementById('total-reports').innerText = data.length;
             const pendingCount = data.filter(r => r.Status === 'Pending' || r.Status === 'Open').length;
             document.getElementById('pending-reports').innerText = pendingCount;
-            document.getElementById('progress-reports').innerText = data.filter(r => r.Status === 'On Progress').length;
             document.getElementById('closed-reports').innerText = data.filter(r => r.Status === 'Closed').length;
 
             const total = data.length || 1;
             document.getElementById('bar-pending').style.width = `${(pendingCount/total)*100}%`;
-            document.getElementById('bar-progress').style.width = `${(data.filter(r => r.Status === 'On Progress').length/total)*100}%`;
             document.getElementById('bar-closed').style.width = `${(data.filter(r => r.Status === 'Closed').length/total)*100}%`;
 
             const tableBody = document.getElementById('case-table-body');
@@ -500,8 +487,6 @@
 
                 if (statusText === 'Open') {
                     statusText = 'Pending';
-                } else if (statusText === 'On Progress') {
-                    statusColor = 'status-progress';
                 } else if (statusText === 'Closed') {
                     statusColor = 'status-closed';
                 }
@@ -558,9 +543,13 @@
             if(currentStatus === 'Open') currentStatus = 'Pending';
             document.getElementById('modal-status-select').value = currentStatus || 'Pending';
             
-            document.getElementById('modal-admin-analysis').value = "";
-            document.getElementById('modal-admin-action').value = "";
-            document.getElementById('modal-admin-logistics').value = "";
+            // Set values for the fields
+            document.getElementById('modal-admin-notes').value = row.AdminNotes || "";
+            document.getElementById('modal-ref-po').value = row.PO || "";
+            document.getElementById('modal-update-date').value = new Date().toISOString().split('T')[0];
+
+            // Initial visibility check
+            toggleAdminFields();
 
             document.getElementById('detail-modal').classList.remove('hidden');
         }
@@ -570,18 +559,26 @@
             currentEditingId = null;
         }
 
+        // VISIBILITY TOGGLE FUNCTION
+        function toggleAdminFields() {
+            const status = document.getElementById('modal-status-select').value;
+            const fieldsContainer = document.getElementById('admin-fields-container');
+            const placeholder = document.getElementById('pending-placeholder');
+            
+            if (status === 'Closed') {
+                fieldsContainer.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+            } else {
+                fieldsContainer.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+            }
+        }
+
         async function saveCaseUpdate() {
             if(!currentEditingId) return;
 
             const newStatus = document.getElementById('modal-status-select').value;
-            const analysis = document.getElementById('modal-admin-analysis').value;
-            const action = document.getElementById('modal-admin-action').value;
-            const logistics = document.getElementById('modal-admin-logistics').value;
-            
-            let combinedNotes = "";
-            if(analysis) combinedNotes += `[Analisis: ${analysis}] `;
-            if(action) combinedNotes += `[Tindakan: ${action}] `;
-            if(logistics) combinedNotes += `[Logistik: ${logistics}]`;
+            const newNotes = document.getElementById('modal-admin-notes').value;
             
             const btn = document.getElementById('btn-save-update');
             const originalText = btn.innerHTML;
@@ -593,7 +590,7 @@
                 action: 'update_case',
                 id: currentEditingId,
                 status: newStatus,
-                notes: combinedNotes
+                notes: newNotes
             };
 
             try {
@@ -607,7 +604,7 @@
                 const row = allReports.find(r => r.id == currentEditingId);
                 if(row) {
                     row.Status = newStatus;
-                    row.AdminNotes = combinedNotes;
+                    row.AdminNotes = newNotes;
                 }
                 
                 const toast = document.getElementById('toast-notification');
