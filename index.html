@@ -236,13 +236,13 @@
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow">
             <!-- DASHBOARD -->
             <section id="dashboard-view" class="hidden space-y-8 fade-in">
-                <div class="flex flex-col md:flex-row justify-between items-end bg-white rounded-xl p-6 border border-slate-200 shadow-sm gap-4">
+                <div class="flex justify-between items-end bg-white rounded-xl p-6 border border-slate-200 shadow-sm gap-4">
                     <div>
                         <h2 class="text-2xl font-bold text-slate-800">Quality Control Dashboard</h2>
                         <p class="text-slate-600 text-sm mt-1">Data Real-time dari Google Sheets.</p>
                     </div>
                     
-                    <!-- NEW: FILTERS & TOOLS -->
+                    <!-- FILTERS & TOOLS -->
                     <div class="flex flex-wrap gap-2">
                         <!-- Filter Bulan -->
                         <select id="filter-month" onchange="applyFilters()" class="text-xs bg-white border border-slate-300 text-slate-700 py-2 px-3 rounded-lg focus:ring-brand-500 focus:border-brand-500">
@@ -277,7 +277,7 @@
                     </div>
                 </div>
 
-                <!-- Metrics (3 Columns) -->
+                <!-- Metrics (3 Columns Only) -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <!-- Total -->
                     <div class="bg-blue-50 p-6 rounded-xl border border-blue-100 shadow-sm">
@@ -442,7 +442,7 @@
     </div>
 
     <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby0oLg4X97qSQxG9qrBreWwtZrDQFEczIgi22RDciCyJhRd8GFw7Ymc4XjZNPjYw0qOXQ/exec"; 
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzXzDx4IzBt9dCToyVlCM7ikI2YqDOR4FO6dLJ3NOc_aUL_nchYvJA-7e--jWRPFEj9Yg/exec"; 
         const ADMIN_KEYWORDS = ['admin', 'qc', 'boss', 'spv', 'manager']; 
         let isAdmin = false;
         let currentUser = "";
@@ -523,7 +523,7 @@
             }
         }
 
-        // NEW: Apply Filters (Date + Search)
+        // Apply Filters (Date + Search)
         function applyFilters() {
             const month = document.getElementById('filter-month').value;
             const year = document.getElementById('filter-year').value;
@@ -601,12 +601,12 @@
 
                 const tr = document.createElement('tr');
                 tr.className = "bg-white border-b hover:bg-slate-50 transition";
-                // FIXED: Aligned Columns with Header (Date, PO, Project, Sales, Masalah, Bukti, Status, Aksi)
+                
                 tr.innerHTML = `
                     <td class="px-6 py-4 whitespace-nowrap text-slate-500 text-left">${dateStr}</td>
                     <td class="px-6 py-4 text-left font-semibold text-brand-600">${row.PO || '-'}</td>
                     <td class="px-6 py-4 text-left"><div class="text-sm font-bold text-slate-800">${row.Project || '-'}</div></td>
-                    <td class="px-6 py-4 text-left text-slate-600">${row.Sales}</td>
+                    <td class="px-6 py-4 text-slate-600 text-left">${row.Sales}</td>
                     <td class="px-6 py-4 text-left"><div class="text-sm font-medium text-slate-800">${row.Category}</div><div class="text-xs text-slate-500 truncate max-w-[150px]">${row.Chronology}</div></td>
                     <td class="px-6 py-4 text-center text-xs">${evidenceLink}</td>
                     <td class="px-6 py-4 text-center"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColor}">${statusText}</span></td>
@@ -629,30 +629,27 @@
             document.getElementById('modal-id').innerText = `ID: ${id}`;
             document.getElementById('modal-display-po').innerText = row.PO || '-'; 
             document.getElementById('modal-date').innerText = row.Date ? new Date(row.Date).toLocaleDateString() : '-';
-            document.getElementById('modal-sales').innerText = row.Sales;
             
-            // Logic Extract Phone from "Name [Phone]" string if available in Sales column
-            // We are NOT changing backend, so phone is mixed in Sales column or sent via form.
-            // Wait, in previous turn I set sales = "Name [Phone]". 
-            // So we need to parse it back or just display it.
-            // AND we need to check if phone is available for WA button.
-            
+            // Extract Phone from "Name [Phone]"
             let phone = '-';
             let salesName = row.Sales;
             
-            // Try to extract phone from "Name [Phone]" format
-            const phoneMatch = row.Sales.match(/\[(.*?)\]/);
-            if (phoneMatch && phoneMatch[1]) {
-                 phone = phoneMatch[1];
-                 salesName = row.Sales.replace(phoneMatch[0], '').trim();
-                 document.getElementById('modal-sales').innerText = salesName;
+            if(row.Sales && row.Sales.includes('[')) {
+                const phoneMatch = row.Sales.match(/\[(.*?)\]/);
+                if (phoneMatch && phoneMatch[1]) {
+                     phone = phoneMatch[1];
+                     salesName = row.Sales.replace(phoneMatch[0], '').trim();
+                }
+            } else if (row.PhoneSales) {
+                 // Future backend support
             }
-            
+
+            document.getElementById('modal-sales').innerText = salesName;
             document.getElementById('modal-sales-phone').innerText = phone;
             
             const waBtn = document.getElementById('btn-wa-sales');
             if (phone && phone !== '-' && phone.length > 5) {
-                let cleanPhone = phone.toString().replace(/\D/g, '');
+                let cleanPhone = phone.replace(/\D/g, '');
                 if (cleanPhone.startsWith('0')) {
                     cleanPhone = '62' + cleanPhone.substring(1);
                 }
@@ -681,14 +678,11 @@
             if(currentStatus === 'Open') currentStatus = 'Pending';
             document.getElementById('modal-status-select').value = currentStatus || 'Pending';
             
-            // Set values for the fields
             document.getElementById('modal-admin-notes').value = row.AdminNotes || "";
             document.getElementById('modal-ref-po').value = row.PO || "";
             document.getElementById('modal-update-date').value = new Date().toISOString().split('T')[0];
 
-            // Initial visibility check
             toggleAdminFields();
-
             document.getElementById('detail-modal').classList.remove('hidden');
         }
 
@@ -697,7 +691,6 @@
             currentEditingId = null;
         }
 
-        // VISIBILITY TOGGLE FUNCTION
         function toggleAdminFields() {
             const status = document.getElementById('modal-status-select').value;
             const fieldsContainer = document.getElementById('admin-fields-container');
@@ -821,7 +814,7 @@
             const salesCombined = `${name} [${phone}]`;
 
             const formData = {
-                sales: salesCombined, // Combined field
+                sales: salesCombined, 
                 date: document.getElementById('input-date').value,
                 customer: document.getElementById('input-customer').value,
                 po: document.getElementById('input-po').value,
