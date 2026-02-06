@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pengaduan MPDN</title>
+    <title>Microvision QC System</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -44,7 +44,7 @@
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        .chart-container { position: relative; width: 100%; height: 300px; }
+        .chart-container { position: relative; width: 100%; height: 350px; }
         @media (min-width: 768px) { .chart-container { height: 350px; } }
         .fade-in { animation: fadeIn 0.4s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -176,7 +176,7 @@
                 <div class="flex justify-between items-start mb-6">
                     <div>
                         <h3 class="text-lg font-bold text-brand-900">Tindak Lanjut</h3>
-                        <p class="text-xs text-slate-500">Ubah status ke Closed untuk mengisi laporan.</p>
+                        <p class="text-xs text-slate-500">Perhatikan Data untuk memastikan tidak ada kesalahan.</p>
                     </div>
                     <button onclick="closeDetailModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl">×</button>
                 </div>
@@ -377,8 +377,8 @@
                     <div class="p-4 border-t border-slate-100 flex justify-end gap-2" id="queue-pagination"></div>
                 </div>
 
-                <!-- Charts -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Charts (Added Gap) -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-4"> 
                     <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
                         <div class="chart-container"><canvas id="categoryChart"></canvas></div>
                     </div>
@@ -429,10 +429,10 @@
                                     <h3 class="font-bold text-brand-900 mb-4 text-sm bg-brand-100 inline-block px-2 py-1 rounded">IDENTITAS</h3>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         <div><label class="block text-sm font-semibold text-slate-700 mb-1">Nama Sales / PIC <span class="text-red-600">*</span></label><input type="text" id="input-sales" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
-                                        <div><label class="block text-sm font-semibold text-slate-700 mb-1">No HP Sales (WA) <span class="text-red-600">*</span></label><input type="text" id="input-phone-sales" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
+                                        <div><label class="block text-sm font-semibold text-slate-700 mb-1">No HP Sales (WA) <span class="text-red-600">*</span></label><input type="text" id="input-phone-sales" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500" placeholder="0812xxxx"></div>
                                         <div><label class="block text-sm font-semibold text-slate-700 mb-1">Tanggal Laporan <span class="text-red-600">*</span></label><input type="date" id="input-date" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
                                         <div class="md:col-span-1"><label class="block text-sm font-semibold text-slate-700 mb-1">Nama Customer / PT <span class="text-red-600">*</span></label><input type="text" id="input-customer" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500" placeholder="Ex. IVP / MLDS"></div>
-                                        <div class="md:col-span-2"><label class="block text-sm font-semibold text-slate-700 mb-1">No PO / SPK <span class="text-red-600">*</span></label><input type="text" id="input-po" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
+                                        <div class="md:col-span-2"><label class="block text-sm font-semibold text-slate-700 mb-1">No PO / SPK <span class="text-red-600">*</span></label><input type="text" id="input-po" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500" placeholder="Contoh: INV-2024-VID-001"></div>
                                     </div>
                                 </div>
 
@@ -465,17 +465,13 @@
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-1">Bukti Foto/Video (Max 5MB) <span class="text-red-600">*</span></label>
                                         <div id="upload-area" class="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:bg-white hover:border-brand-300 transition cursor-pointer relative" onclick="document.getElementById('input-evidence').click()">
-                                            <input type="file" id="input-evidence" accept="image/*,video/*" class="hidden" onchange="handleFileSelect(this)">
+                                            <input type="file" id="input-evidence" accept="image/*,video/*" class="hidden" multiple onchange="handleFileSelect(this)">
                                             <div id="upload-placeholder" class="space-y-2">
                                                 <div class="mx-auto h-12 w-12 text-slate-300"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg></div>
                                                 <div class="text-sm text-slate-500 font-medium">Klik untuk upload foto/video</div>
                                             </div>
                                         </div>
-                                        <div id="preview-container" class="hidden mt-4 relative group w-full max-w-xs mx-auto border rounded-lg overflow-hidden preview-wrapper">
-                                            <div id="preview-content" class="bg-slate-100 flex items-center justify-center h-48 w-full"></div>
-                                            <button type="button" onclick="removeFile(event)" class="delete-btn opacity-0 transition-opacity absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 shadow-md z-10"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
-                                            <div class="bg-white px-3 py-2 text-xs text-slate-600 truncate border-t" id="filename-display">filename.jpg</div>
-                                        </div>
+                                        <div id="preview-container" class="hidden mt-4"></div>
                                     </div>
                                 </div>
                                 <div class="bg-slate-50 p-6 rounded-lg border border-slate-200">
@@ -489,8 +485,8 @@
                                         </div>
                                         <div class="md:col-span-2">
                                             <label class="block text-sm font-semibold text-slate-700 mb-1">Tingkat Urgensi (1-5)</label>
-                                            <input id="input-urgency" type="range" min="1" max="5" value="1" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-600">
-                                            <div class="text-center text-xs font-bold text-brand-700 mt-1">Level: <span id="urgency-val">1</span></div>
+                                            <input id="input-urgency" type="range" min="1" max="5" value="3" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-600">
+                                            <div class="text-center text-xs font-bold text-brand-700 mt-1">Level: <span id="urgency-val">3</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -518,11 +514,11 @@
     </footer>
 
     <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxppq1wG-iLtAnumeBfODcXcijM7rm8dU0j6XRwdgShgQV6DtHxKe0akvndbzZ_zTwACw/exec"; 
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyfH4Ws06ze64IgfB7ulCHQy5iH-GqA9GOjmCuZL5hxxCOfk4FxhJikjiG3rnHSyr6WPA/exec"; 
         const ADMIN_KEYWORDS = ['admin', 'qc', 'boss', 'spv', 'manager']; 
         let isAdmin = false;
         let currentUser = "";
-        let currentFile = null; 
+        let selectedFiles = []; // Changed to array for multiple files
         let allReports = [];
         let currentEditingId = null;
 
@@ -1055,30 +1051,67 @@
         }
 
         function handleFileSelect(input) {
-            if (input.files && input.files[0]) {
-                const file = input.files[0];
-                if (file.size > 5 * 1024 * 1024) { alert("Max 5MB"); input.value = ''; return; }
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const previewContent = document.getElementById('preview-content');
-                    if (file.type.startsWith('image/')) previewContent.innerHTML = `<img src="${e.target.result}" class="h-full w-full object-cover">`;
-                    else if (file.type.startsWith('video/')) previewContent.innerHTML = `<video src="${e.target.result}" class="h-full w-full object-cover" controls></video>`;
-                    document.getElementById('filename-display').innerText = file.name;
-                    document.getElementById('upload-area').classList.add('hidden');
-                    document.getElementById('preview-container').classList.remove('hidden');
-                    currentFile = file;
-                };
-                reader.readAsDataURL(file);
+            if (input.files && input.files.length > 0) {
+                // Validate Total Size
+                let totalSize = 0;
+                for (let f of selectedFiles) totalSize += f.size;
+                for (let f of input.files) totalSize += f.size;
+                
+                if (totalSize > 5 * 1024 * 1024) { // 5MB Total
+                    alert("Total ukuran file tidak boleh lebih dari 5MB!");
+                    return;
+                }
+
+                // Add to array
+                Array.from(input.files).forEach(file => {
+                     selectedFiles.push(file);
+                });
+                
+                renderPreviews();
+                input.value = ''; // Reset input so same file can be selected again if needed
             }
         }
         
-        function removeFile(event) {
+        function renderPreviews() {
+            const container = document.getElementById('preview-container');
+            const uploadArea = document.getElementById('upload-area');
+            
+            if (selectedFiles.length === 0) {
+                container.classList.add('hidden');
+                uploadArea.classList.remove('hidden');
+                return;
+            }
+
+            container.classList.remove('hidden');
+            uploadArea.classList.add('hidden');
+            
+            let html = '<div class="grid grid-cols-3 gap-2">';
+            selectedFiles.forEach((file, index) => {
+                const url = URL.createObjectURL(file);
+                const isImg = file.type.startsWith('image/');
+                html += `
+                    <div class="relative aspect-square rounded-lg overflow-hidden border border-slate-200 group">
+                        ${isImg ? `<img src="${url}" class="w-full h-full object-cover">` : `<video src="${url}" class="w-full h-full object-cover"></video>`}
+                        <button onclick="removeFile(${index})" type="button" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition">×</button>
+                    </div>
+                `;
+            });
+            // Add "Add more" button
+            html += `
+                <div onclick="document.getElementById('input-evidence').click()" class="aspect-square rounded-lg border-2 border-dashed border-slate-300 flex flex-col items-center justify-center text-slate-400 cursor-pointer hover:bg-slate-50 transition">
+                    <span class="text-2xl">+</span>
+                    <span class="text-[10px]">Tambah</span>
+                </div>
+            `;
+            html += '</div>';
+            
+            container.innerHTML = html;
+        }
+
+        function removeFile(index) {
             if(event) event.stopPropagation();
-            document.getElementById('input-evidence').value = ''; 
-            currentFile = null; 
-            document.getElementById('upload-area').classList.remove('hidden');
-            document.getElementById('preview-container').classList.add('hidden');
-            document.getElementById('preview-content').innerHTML = '';
+            selectedFiles.splice(index, 1);
+            renderPreviews();
         }
 
         const getBase64 = (file) => {
@@ -1097,17 +1130,26 @@
             btn.innerHTML = `<div class="spinner mr-2"></div> Mengirim...`;
             btn.disabled = true;
 
-            if (!currentFile) { alert("Wajib upload bukti!"); btn.innerHTML = originalText; btn.disabled = false; return; }
+            if (selectedFiles.length === 0) { alert("Wajib upload bukti!"); btn.innerHTML = originalText; btn.disabled = false; return; }
 
-            let fileData = null;
+            let filesData = [];
             try {
-                const base64Content = await getBase64(currentFile);
-                fileData = { name: currentFile.name, type: currentFile.type, content: base64Content };
+                // Convert all files to base64
+                const filePromises = selectedFiles.map(file => getBase64(file).then(content => ({
+                    name: file.name,
+                    type: file.type,
+                    content: content
+                })));
+                filesData = await Promise.all(filePromises);
             } catch (e) { alert("Gagal proses file"); btn.innerHTML = originalText; btn.disabled = false; return; }
 
+            // Combine name and phone
+            const name = document.getElementById('input-sales').value;
+            const phone = document.getElementById('input-phone-sales').value;
+            const salesCombined = `${name} [${phone}]`;
+
             const formData = {
-                sales: document.getElementById('input-sales').value,
-                phoneSales: document.getElementById('input-phone-sales').value,
+                sales: salesCombined, 
                 date: document.getElementById('input-date').value,
                 customer: document.getElementById('input-customer').value,
                 po: document.getElementById('input-po').value,
@@ -1121,7 +1163,7 @@
                 urgency: document.getElementById('input-urgency').value,
                 needDate: document.getElementById('input-need-date').value,
                 returnDate: document.getElementById('input-return-date').value,
-                file: fileData 
+                files: filesData // Send array of files
             };
 
             const payload = { action: 'insert', data: formData };
@@ -1136,7 +1178,8 @@
                 .then(() => {
                     showToast("Data berhasil disimpan.");
                     event.target.reset();
-                    removeFile(); 
+                    selectedFiles = []; // Clear files
+                    renderPreviews(); // Reset preview
                     btn.innerHTML = originalText;
                     btn.disabled = false;
                     if(isAdmin) { switchTab('dashboard'); setTimeout(fetchData, 2000); }
@@ -1201,12 +1244,11 @@
                     layout: { padding: { top: 40 } }, // Space for label
                     plugins: { 
                         legend: {display: false},
-                        title: { display: true, text: 'Kasus Terbanyak Berdasarkan Kategori' },
+                        title: { display: true, text: 'Kasus Terbanyak Berdasarkan Kategori', padding: { bottom: 30 }, font: { size: 14 } },
                         datalabels: {
-                            color: 'black',
+                            color: 'white', // Color inside bar
                             anchor: 'end',
-                            align: 'bottom',
-                            offset: 0,
+                            align: 'start', // Inside top
                             font: { weight: 'bold' }
                         }
                     } 
@@ -1224,19 +1266,20 @@
                         borderColor: '#f97316',
                         backgroundColor: 'rgba(249, 115, 22, 0.1)',
                         fill: true,
-                        tension: 0.1
+                        tension: 0.4
                     }] 
                 },
                 options: { 
                     responsive: true, 
                     maintainAspectRatio: false,
-                    layout: { padding: { top: 20 } }, // Space for label
+                    layout: { padding: { top: 40 } }, // Space for label
                     plugins: {
-                        title: { display: true, text: 'Tren Kasus Per Bulan' },
+                        title: { display: true, text: 'Tren Kasus Per Bulan', padding: { bottom: 30 }, font: { size: 14 } },
                         datalabels: {
-                            color: 'black',
+                            color: 'black', // Color on top of line point
                             anchor: 'end',
-                            align: 'bottom',
+                            align: 'top', // Above point
+                            offset: 5,
                             font: { weight: 'bold' }
                         }
                     }
@@ -1248,6 +1291,3 @@
     </script>
 </body>
 </html>
-
-
-
