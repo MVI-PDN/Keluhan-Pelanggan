@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form Pengaduan MPDN</title>
+    <title>Microvision QC System</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -49,12 +49,12 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
         /* Status Badge Colors */
-        .status-pending { @apply bg-red-100 tt-red-800 border border-red-200; }
-        .status-closed { @apply bg-green-100 tt-green-800 border border-green-200; }
+        .status-pending { @apply bg-red-100 text-red-800 border border-red-200; }
+        .status-closed { @apply bg-green-100 text-green-800 border border-green-200; }
 
         /* Aging Colors */
-        .aging-new { @apply tt-green-600 font-bold; }
-        .aging-med { @apply tt-yellow-600 font-bold; }
+        .aging-new { @apply text-green-600 font-bold; }
+        .aging-med { @apply text-yellow-600 font-bold; }
         .aging-old { @apply text-red-600 font-bold; }
 
         /* Upload Animation */
@@ -95,14 +95,14 @@
             <div class="w-full md:w-1/2 p-6 bg-slate-50 border-r border-slate-200 overflow-y-auto">
                 <div class="mb-6 border-b border-slate-200 pb-4 flex justify-between items-start">
                     <div>
-                        <p class="text-xs text-slate-400 uppercase tracking-wider mb-1">No PO / SPK</p>
-                        <input type="text" id="modal-display-po" class="text-3xl font-extrabold text-black bg-transparent border-none p-0 w-full focus:ring-0 input-readonly" readonly>
-                        <p class="text-sm font-semibold text-black mt-1" id="modal-id">ID: MCV-...</p>
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">No PO / SPK</p>
+                        <input type="text" id="modal-display-po" class="text-2xl font-bold text-brand-700 bg-transparent border-none p-0 w-full focus:ring-0 input-readonly" readonly>
+                        <p class="text-xs text-slate-400 mt-1" id="modal-id">ID: MCV-...</p>
                     </div>
                     <!-- EDIT BUTTON -->
                     <button onclick="toggleEditMode()" id="btn-edit-toggle" class="text-xs flex items-center gap-1 text-blue-600 hover:text-blue-800 font-bold bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-200 transition">
                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-                        Edit
+                        Edit Data
                     </button>
                 </div>
                 
@@ -146,7 +146,6 @@
                             <input type="text" id="modal-issue" class="w-full font-medium text-red-600 input-readonly rounded" readonly>
                         </div>
 
-                        <!-- FIX: Added missing Request field -->
                         <div>
                             <p class="text-xs text-slate-500">Permintaan:</p>
                             <input type="text" id="modal-request" class="w-full font-medium text-slate-700 input-readonly rounded" readonly>
@@ -175,7 +174,7 @@
             <div class="w-full md:w-1/2 p-6 flex flex-col">
                 <div class="flex justify-between items-start mb-6">
                     <div>
-                        <h3 class="text-lg font-bold text-brand-900">Tindak lanjut Investigasi</h3>
+                        <h3 class="text-lg font-bold text-brand-900">Tindak Lanjut</h3>
                         <p class="text-xs text-slate-500">Ubah status ke Closed untuk mengisi laporan.</p>
                     </div>
                     <button onclick="closeDetailModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl">×</button>
@@ -223,7 +222,7 @@
                     <button onclick="saveCaseUpdate()" id="btn-save-update" class="w-full bg-brand-900 text-white py-3 rounded-lg font-bold hover:bg-brand-800 transition shadow-lg text-sm flex justify-center items-center gap-2 transform active:scale-95 duration-150">
                         <span>Simpan Status & Catatan</span>
                     </button>
-                    <p class="text-[10px] text-center text-slate-400 mt-2 italic">*Edit data Pengaduan jika terdapat kesalahan input.</p>
+                    <p class="text-[10px] text-center text-slate-400 mt-2 italic">*Perhatikan Data untuk memastikan tidak ada kesalahan.</p>
                 </div>
             </div>
         </div>
@@ -235,7 +234,7 @@
             <button onclick="hideLogin()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition font-bold text-xl">×</button>
             <img src="https://raw.githubusercontent.com/MVI-PDN/Keluhan-Pelanggan/main/microvision-logo.webp" alt="Microvision Logo" class="h-12 mx-auto mb-6 object-contain" onerror="this.style.display='none'; document.getElementById('login-logo-text').classList.remove('hidden')">
             <h1 id="login-logo-text" class="text-4xl font-bold text-brand-900 italic mb-4 tracking-wide hidden">Microvision</h1>
-            <h2 class="text-lg font-semibold text-slate-600 mb-6 uppercase tracking-wider">Pengaduan Pelanggan</h2>
+            <h2 class="text-lg font-semibold text-slate-600 mb-6 uppercase tracking-wider">LOGIN SEBAGAI ADMIN</h2>
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <input type="email" id="login-email" required class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none text-sm transition text-center">
                 <button type="submit" class="w-full bg-brand-900 text-white py-3 rounded-lg font-bold hover:bg-brand-800 transition shadow-md text-sm">Masuk</button>
@@ -276,13 +275,12 @@
             <section id="dashboard-view" class="hidden space-y-8 fade-in">
                 <div class="flex justify-between items-end bg-white rounded-xl p-6 border border-slate-200 shadow-sm gap-4">
                     <div>
-                        <h2 class="text-2xl font-bold text-slate-800">Dashboard Pengaduan</h2>
+                        <h2 class="text-2xl font-bold text-slate-800">DASHBOARD PENGADUAN</h2>
                         <p class="text-slate-600 text-sm mt-1">Data Real-time dari Google Sheets.</p>
                     </div>
                     
                     <!-- FILTERS & TOOLS -->
                     <div class="flex flex-wrap gap-2">
-                        <!-- Filter Bulan -->
                         <select id="filter-month" onchange="applyFilters()" class="text-xs bg-white border border-slate-300 text-slate-700 py-2 px-3 rounded-lg focus:ring-brand-500 focus:border-brand-500">
                             <option value="all">Semua Bulan</option>
                             <option value="0">Januari</option>
@@ -298,7 +296,6 @@
                             <option value="10">November</option>
                             <option value="11">Desember</option>
                         </select>
-                        <!-- Filter Tahun -->
                         <select id="filter-year" onchange="applyFilters()" class="text-xs bg-white border border-slate-300 text-slate-700 py-2 px-3 rounded-lg focus:ring-brand-500 focus:border-brand-500">
                             <option value="all">Semua Tahun</option>
                             <option value="2024">2024</option>
@@ -309,7 +306,6 @@
                             <option value="2029">2029</option>
                             <option value="2030">2030</option>
                         </select>
-                        
                         <button onclick="downloadExcel()" class="text-xs font-bold bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 px-4 py-2 rounded-lg transition flex items-center gap-2">📥 Excel</button>
                         <button onclick="fetchData()" class="text-xs font-bold bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 px-4 py-2 rounded-lg transition flex items-center gap-2">🔄 Refresh</button>
                     </div>
@@ -429,7 +425,7 @@
                                         <div><label class="block text-sm font-semibold text-slate-700 mb-1">Nama Sales / PIC <span class="text-red-600">*</span></label><input type="text" id="input-sales" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
                                         <div><label class="block text-sm font-semibold text-slate-700 mb-1">No HP Sales (WA) <span class="text-red-600">*</span></label><input type="text" id="input-phone-sales" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500" placeholder="0812xxxx"></div>
                                         <div><label class="block text-sm font-semibold text-slate-700 mb-1">Tanggal Laporan <span class="text-red-600">*</span></label><input type="date" id="input-date" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
-                                        <div class="md:col-span-1"><label class="block text-sm font-semibold text-slate-700 mb-1">Nama Customer / PT <span class="text-red-600">*</span></label><input type="text" id="input-customer" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500" placeholder="Ex: IVP / MLDS"></div>
+                                        <div class="md:col-span-1"><label class="block text-sm font-semibold text-slate-700 mb-1">Nama Customer / PT <span class="text-red-600">*</span></label><input type="text" id="input-customer" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500" placeholder="Ex. IVP / MLDS"></div>
                                         <div class="md:col-span-2"><label class="block text-sm font-semibold text-slate-700 mb-1">No PO / SPK <span class="text-red-600">*</span></label><input type="text" id="input-po" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
                                     </div>
                                 </div>
@@ -439,8 +435,8 @@
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         <div class="md:col-span-2"><label class="block text-sm font-semibold text-slate-700 mb-1">Tipe Produk / Model <span class="text-red-600">*</span></label><input type="text" id="input-product" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
                                         <div class="md:col-span-2"><label class="block text-sm font-semibold text-slate-700 mb-1">Nama Project / Lokasi <span class="text-red-600">*</span></label><input type="text" id="input-project" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
-                                        <div class="md:col-span-2"><label class="block text-sm font-semibold text-slate-700 mb-1">Serial Number ( Monitor / KiosK )</label><input type="text" id="input-batch" class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
-                                        <div><label class="block text-sm font-semibold text-slate-700 mb-1">Jml. Unit Bermasalah *</label><input type="number" id="input-qty-bad" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
+                                        <div class="md:col-span-2"><label class="block text-sm font-semibold text-slate-700 mb-1">Serial Number / Batch Modul</label><input type="text" id="input-batch" class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
+                                        <div><label class="block text-sm font-semibold text-slate-700 mb-1">Jml. Unit Bermasalah <span class="text-red-600">*</span></label><input type="number" id="input-qty-bad" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
                                     </div>
                                 </div>
 
@@ -502,7 +498,7 @@
                     <div class="lg:col-span-1">
                         <div class="bg-brand-50 p-6 rounded-xl border border-brand-100 sticky top-24">
                             <div class="flex items-center gap-2 mb-3"><span class="text-xl">💡</span><h3 class="font-bold text-brand-900">Info Penting</h3></div>
-                            <p class="text-sm text-brand-700 mb-4 leading-relaxed">Pastikan <strong>No PO / SPK</strong> tercatat dengan benar untuk kebutuhan Investigasi.</p>
+                            <p class="text-sm text-brand-700 mb-4 leading-relaxed">Pastikan <strong>Serial Number</strong> tercatat untuk klaim garansi.</p>
                         </div>
                     </div>
                 </div>
@@ -511,7 +507,7 @@
     </div>
 
     <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwwOy3VguxVkmgUdz4wYy5JXmQvGToUTkBFDhOdKEchderlYaNV24PuCdLIZ7UAMYK9BQ/exec"; 
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyfH4Ws06ze64IgfB7ulCHQy5iH-GqA9GOjmCuZL5hxxCOfk4FxhJikjiG3rnHSyr6WPA/exec"; 
         const ADMIN_KEYWORDS = ['admin', 'qc', 'boss', 'spv', 'manager']; 
         let isAdmin = false;
         let currentUser = "";
@@ -718,7 +714,7 @@
                         <td class="px-6 py-4 text-center text-xs ${agingClass}">${agingText}</td>
                         <td class="px-6 py-4 text-center">
                             <button onclick="openDetailModal('${row.id}')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-md border border-slate-300 font-medium transition flex items-center gap-1 mx-auto">
-                            📝 Detail
+                            Detail
                             </button>
                         </td>
                     `;
@@ -779,7 +775,7 @@
                         <td class="px-6 py-3 truncate max-w-[150px]" title="${row.Category}">${row.Category}</td>
                         <td class="px-6 py-3 text-center"><span class="text-xs text-green-600 font-bold bg-green-50 px-2 py-1 rounded">Closed</span></td>
                         <td class="px-6 py-3 text-center">
-                            <button onclick="openDetailModal('${row.id}')" class="text-blue-600 hover:text-blue-800 text-xs font-bold">📝 Detail</button>
+                            <button onclick="openDetailModal('${row.id}')" class="text-blue-600 hover:text-blue-800 text-xs font-bold">Detail</button>
                         </td>
                     `;
                     tableBody.appendChild(tr);
@@ -816,8 +812,8 @@
 
             currentEditingId = id;
             document.getElementById('modal-id').innerText = `ID: ${id}`;
-            document.getElementById('modal-display-po').innerText = row.PO || '-'; 
-            document.getElementById('modal-date').innerText = row.Date ? new Date(row.Date).toLocaleDateString() : '-';
+            document.getElementById('modal-display-po').value = row.PO || '-'; 
+            document.getElementById('modal-date').value = row.Date ? new Date(row.Date).toLocaleDateString() : '-';
             
             let phone = '-';
             let salesName = row.Sales;
@@ -832,8 +828,8 @@
                  phone = row.PhoneSales;
             }
 
-            document.getElementById('modal-sales').innerText = salesName;
-            document.getElementById('modal-sales-phone').innerText = phone;
+            document.getElementById('modal-sales').value = salesName;
+            document.getElementById('modal-sales-phone').value = phone;
             
             const waBtn = document.getElementById('btn-wa-sales');
             if (phone && phone !== '-' && phone.length > 5) {
@@ -848,17 +844,14 @@
                 waBtn.classList.add('hidden');
             }
 
-            document.getElementById('modal-customer').innerText = row.Customer;
-            document.getElementById('modal-project').innerText = row.Project;
-            document.getElementById('modal-product').innerText = row.Product;
-            
-            // Set Batch if available
+            document.getElementById('modal-customer').value = row.Customer;
+            document.getElementById('modal-project').value = row.Project;
+            document.getElementById('modal-product').value = row.Product;
             document.getElementById('modal-batch').value = row.Batch || "-";
 
-            document.getElementById('modal-issue').innerText = row.Category;
-            // FIXED: Added missing Request display
-            document.getElementById('modal-request').innerText = row.Request || "-";
-            document.getElementById('modal-chronology').innerText = row.Chronology;
+            document.getElementById('modal-issue').value = row.Category;
+            document.getElementById('modal-request').value = row.Request || "-";
+            document.getElementById('modal-chronology').value = row.Chronology;
             
             const evidenceContainer = document.getElementById('modal-evidence');
             if (row.Evidence && row.Evidence.startsWith('http')) {
@@ -913,8 +906,59 @@
         // Only simulating data save for edit fields in this version as backend only supports status/notes update
         // To support full editing, backend handleUpdateCase needs modification to accept other fields
         async function saveDataEdit() {
-           alert("Fitur simpan data edit (Produk/SN) memerlukan update pada backend Google Script untuk menangani field baru. Saat ini hanya Status & Catatan yang tersimpan ke server.");
-           // Logic to collect data would go here
+           const id = currentEditingId;
+           // Construct update object
+           const updatedData = {
+               id: id,
+               sales: document.getElementById('modal-sales').value,
+               customer: document.getElementById('modal-customer').value,
+               po: document.getElementById('modal-display-po').value, // or ref-po
+               product: document.getElementById('modal-product').value,
+               batch: document.getElementById('modal-batch').value,
+               project: document.getElementById('modal-project').value,
+               chronology: document.getElementById('modal-chronology').value,
+               request: document.getElementById('modal-request').value
+           };
+           
+           const btn = document.getElementById('btn-save-data');
+           const originalText = btn.innerHTML;
+           btn.innerHTML = `<div class="spinner w-3 h-3 border-white border-2 rounded-full animate-spin"></div>`;
+           btn.disabled = true;
+
+           const payload = {
+               action: 'edit_full_data',
+               data: updatedData
+           };
+
+           try {
+               await fetch(GOOGLE_SCRIPT_URL, {
+                   method: 'POST',
+                   mode: 'no-cors',
+                   headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                   body: JSON.stringify(payload)
+               });
+               
+               // Update local cache
+               const row = allReports.find(r => r.id == id);
+               if(row) {
+                   row.Sales = updatedData.sales;
+                   row.Customer = updatedData.customer;
+                   row.PO = updatedData.po;
+                   row.Product = updatedData.product;
+                   row.Batch = updatedData.batch;
+                   row.Project = updatedData.project;
+                   row.Chronology = updatedData.chronology;
+                   row.Request = updatedData.request;
+               }
+               
+               alert("Data berhasil diperbarui!");
+               openDetailModal(id); // Reload modal in read-only mode
+               renderDashboard(allReports);
+           } catch(e) {
+               alert("Gagal menyimpan data: " + e.message);
+               btn.innerHTML = originalText;
+               btn.disabled = false;
+           }
         }
 
         function toggleAdminFields() {
@@ -1129,5 +1173,3 @@
     </script>
 </body>
 </html>
-
-
