@@ -8,8 +8,9 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Chart.js -->
+    <!-- Chart.js & Datalabels Plugin -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -64,9 +65,6 @@
         /* Hover Delete Button */
         .preview-wrapper:hover .delete-btn { opacity: 1; }
         
-        /* Thumbnail Preview */
-        .img-preview-container:hover .img-popover { display: block; }
-
         /* Readonly Input Style */
         .input-readonly { background-color: transparent; border-color: transparent; padding: 0; font-weight: 500; color: #1e293b; pointer-events: none; }
         .input-editable { background-color: #ffffff; border-color: #cbd5e1; padding: 0.25rem 0.5rem; pointer-events: auto; }
@@ -118,8 +116,8 @@
                         <div class="text-slate-500 col-span-1">No HP (WA)</div>
                         <div class="col-span-2 flex items-center gap-2">
                             <input type="text" id="modal-sales-phone" class="w-full text-sm input-readonly rounded text-blue-600" readonly>
-                            <a id="btn-wa-sales" href="#" target="_blank" class="hidden text-xs bg-green-500 hover:bg-green-600 text-white px-2 py-0.5 rounded flex items-center gap-1 transition shadow-sm border border-green-600 no-underline font-bold">
-                                💬 Chat WA
+                            <a id="btn-wa-sales" href="#" target="_blank" class="hidden text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg transition shadow-sm font-bold no-underline">
+                                Chat Sales
                             </a>
                         </div>
                         
@@ -281,6 +279,11 @@
                     
                     <!-- FILTERS & TOOLS -->
                     <div class="flex flex-wrap gap-2">
+                        <select id="filter-status" onchange="applyFilters()" class="text-xs bg-white border border-slate-300 text-slate-700 py-2 px-3 rounded-lg focus:ring-brand-500 focus:border-brand-500">
+                            <option value="all">Semua Status</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Closed">Closed</option>
+                        </select>
                         <select id="filter-month" onchange="applyFilters()" class="text-xs bg-white border border-slate-300 text-slate-700 py-2 px-3 rounded-lg focus:ring-brand-500 focus:border-brand-500">
                             <option value="all">Semua Bulan</option>
                             <option value="0">Januari</option>
@@ -341,7 +344,7 @@
                 <!-- QUEUE LIST (Search by PO) - MAX 5 ROWS -->
                 <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
                     <div class="p-6 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <h3 class="font-bold text-lg text-slate-800">📋 Antrian Kasus (Pending)</h3>
+                        <h3 class="font-bold text-lg text-slate-800" id="queue-section-title">📋 Antrian Kasus (Pending)</h3>
                         <div class="relative w-full md:w-64">
                             <input type="text" id="search-input" onkeyup="applyFilters()" class="block w-full p-2 pl-4 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-brand-500" placeholder="Cari No PO / SPK...">
                         </div>
@@ -382,7 +385,7 @@
                 </div>
 
                 <!-- HISTORY LIST (Closed) - MAX 10 ROWS -->
-                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col mt-6">
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col mt-6" id="history-section">
                     <div class="p-6 border-b border-slate-100 bg-slate-50">
                         <h3 class="font-bold text-lg text-slate-700">🗄️ Histori Kasus Selesai (Closed)</h3>
                     </div>
@@ -507,7 +510,7 @@
     </div>
 
     <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw_AOfaJf_3qviDbIWnL6n7F-tna76mUMmG9gUiLmlIVWUqOkPbMPcuzCdxnn8y-nbF3w/exec"; 
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyfH4Ws06ze64IgfB7ulCHQy5iH-GqA9GOjmCuZL5hxxCOfk4FxhJikjiG3rnHSyr6WPA/exec"; 
         const ADMIN_KEYWORDS = ['admin', 'qc', 'boss', 'spv', 'manager']; 
         let isAdmin = false;
         let currentUser = "";
@@ -520,6 +523,9 @@
         const ROWS_HISTORY = 10;
         let pageQueue = 1;
         let pageHistory = 1;
+
+        // Set Last Updated Text
+        document.getElementById('last-updated').innerText = new Date().toLocaleString();
 
         window.addEventListener('load', () => {
             const savedUser = localStorage.getItem('mv_user');
@@ -594,16 +600,18 @@
             }
         }
 
-        // Apply Filters (Date + Search)
+        // Apply Filters (Date + Search + Status)
         function applyFilters() {
             // FIX: Check if filter elements exist to avoid "null" error
             const monthEl = document.getElementById('filter-month');
             const yearEl = document.getElementById('filter-year');
             const searchEl = document.getElementById('search-input');
+            const statusEl = document.getElementById('filter-status');
             
             const month = monthEl ? monthEl.value : 'all';
             const year = yearEl ? yearEl.value : 'all';
             const search = searchEl ? searchEl.value.toLowerCase() : '';
+            const status = statusEl ? statusEl.value : 'all';
 
             let filtered = allReports;
 
@@ -628,7 +636,14 @@
                 );
             }
 
-            renderDashboard(filtered);
+            // 3. Filter by Status (UPDATED)
+            if (status !== 'all') {
+                filtered = filtered.filter(row => row.Status === status);
+            }
+            
+            // Special Logic: If searching, show result in Queue Table area (override normal split)
+            const isSearching = search.trim() !== '';
+            renderDashboard(filtered, isSearching);
         }
 
         function renderDashboard(data, isSearch = false) {
@@ -691,15 +706,7 @@
 
                     let evidenceContent = '<span class="text-slate-400">-</span>';
                     if (row.Evidence && row.Evidence.startsWith('http')) {
-                        evidenceContent = `
-                            <div class="img-preview-container relative inline-block group">
-                                <a href="${row.Evidence}" target="_blank" class="text-blue-500">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                                </a>
-                                <div class="img-popover hidden absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-32 h-32 bg-white border border-slate-200 shadow-lg rounded-lg overflow-hidden z-20">
-                                     <img src="${row.Evidence}" class="w-full h-full object-cover">
-                                </div>
-                            </div>`;
+                        evidenceContent = `<a href="${row.Evidence}" target="_blank" class="text-blue-600 font-bold hover:underline text-xs">Lihat</a>`;
                     }
 
                     const tr = document.createElement('tr');
@@ -848,15 +855,18 @@
             document.getElementById('modal-customer').value = row.Customer;
             document.getElementById('modal-project').value = row.Project;
             document.getElementById('modal-product').value = row.Product;
+            
+            // Set Batch if available
             document.getElementById('modal-batch').value = row.Batch || "-";
 
             document.getElementById('modal-issue').value = row.Category;
+            // FIXED: Added missing Request display
             document.getElementById('modal-request').value = row.Request || "-";
             document.getElementById('modal-chronology').value = row.Chronology;
             
             const evidenceContainer = document.getElementById('modal-evidence');
             if (row.Evidence && row.Evidence.startsWith('http')) {
-                evidenceContainer.innerHTML = `<a href="${row.Evidence}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg> Buka Foto/Video</a>`;
+                evidenceContainer.innerHTML = `<a href="${row.Evidence}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg> Lihat Foto/Video</a>`;
             } else {
                 evidenceContainer.innerHTML = '<span class="text-slate-400">Tidak ada file</span>';
             }
@@ -1162,23 +1172,76 @@
                 if(urg >=1 && urg <=5) urgCounts[urg-1]++;
             });
 
+            // Monthly counts logic - UPDATED
+            const monthCounts = Array(12).fill(0);
+            data.forEach(r => {
+                if (r.Date) {
+                    const d = new Date(r.Date);
+                    if (!isNaN(d.getTime())) {
+                        monthCounts[d.getMonth()]++;
+                    }
+                }
+            });
+            const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+
+            Chart.register(ChartDataLabels); // Register plugin
+
             if(window.catChart) window.catChart.destroy();
             window.catChart = new Chart(document.getElementById('categoryChart').getContext('2d'), {
                 type: 'bar',
                 data: { labels: Object.keys(catCounts), datasets: [{ label: 'Jumlah', data: Object.values(catCounts), backgroundColor: '#0ea5e9' }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false} } }
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    layout: { padding: { top: 30 } }, // Space for label
+                    plugins: { 
+                        legend: {display: false},
+                        title: { display: true, text: 'Kasus Terbanyak Berdasarkan Kategori' },
+                        datalabels: {
+                            color: 'black',
+                            anchor: 'end',
+                            align: 'top',
+                            font: { weight: 'bold' }
+                        }
+                    } 
+                }
             });
 
             if(window.urgChart) window.urgChart.destroy();
             window.urgChart = new Chart(document.getElementById('urgencyChart').getContext('2d'), {
-                type: 'line',
-                data: { labels: ['Low', 'Normal', 'Medium', 'High', 'Urgent'], datasets: [{ label: 'Level', data: urgCounts, borderColor: '#f97316', backgroundColor: 'rgba(249, 115, 22, 0.1)', fill: true }] },
-                options: { responsive: true, maintainAspectRatio: false }
+                type: 'line', // CHANGED TO LINE
+                data: { 
+                    labels: monthLabels, 
+                    datasets: [{ 
+                        label: 'Total Kasus', 
+                        data: monthCounts, 
+                        borderColor: '#f97316',
+                        backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }] 
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    layout: { padding: { top: 30 } }, // Space for label
+                    plugins: {
+                        title: { display: true, text: 'Tren Kasus Per Bulan' },
+                        datalabels: {
+                            color: 'black',
+                            anchor: 'end',
+                            align: 'top',
+                            font: { weight: 'bold' }
+                        }
+                    }
+                }
             });
         }
         
         document.getElementById('input-urgency').addEventListener('input', function(e) { document.getElementById('urgency-val').innerText = e.target.value; });
+        
+        // Helper specifically for jQuery-style contains selector replacement
+        // Not used here, but good practice.
     </script>
 </body>
 </html>
-
