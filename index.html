@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Microvision QC System</title>
+    <title>Form Pengaduan MPDN</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -49,12 +49,12 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
         /* Status Badge Colors */
-        .status-pending { @apply bg-red-100 text-red-800 border border-red-200; }
-        .status-closed { @apply bg-green-100 text-green-800 border border-green-200; }
+        .status-pending { @apply bg-red-100 tt-red-800 border border-red-200; }
+        .status-closed { @apply bg-green-100 tt-green-800 border border-green-200; }
 
         /* Aging Colors */
-        .aging-new { @apply text-green-600 font-bold; }
-        .aging-med { @apply text-yellow-600 font-bold; }
+        .aging-new { @apply tt-green-600 font-bold; }
+        .aging-med { @apply tt-yellow-600 font-bold; }
         .aging-old { @apply text-red-600 font-bold; }
 
         /* Upload Animation */
@@ -95,9 +95,9 @@
             <div class="w-full md:w-1/2 p-6 bg-slate-50 border-r border-slate-200 overflow-y-auto">
                 <div class="mb-6 border-b border-slate-200 pb-4 flex justify-between items-start">
                     <div>
-                        <p class="text-sm font-extrabold text-black uppercase tracking-wider mb-1">No PO / SPK</p>
+                        <p class="text-xs text-slate-400 uppercase tracking-wider mb-1">No PO / SPK</p>
                         <input type="text" id="modal-display-po" class="text-3xl font-extrabold text-black bg-transparent border-none p-0 w-full focus:ring-0 input-readonly" readonly>
-                        <p class="text-xs text-slate-400 mt-1" id="modal-id">ID: MCV-...</p>
+                        <p class="text-sm font-semibold text-black mt-1" id="modal-id">ID: MCV-...</p>
                     </div>
                     <!-- EDIT BUTTON -->
                     <button onclick="toggleEditMode()" id="btn-edit-toggle" class="text-xs flex items-center gap-1 text-blue-600 hover:text-blue-800 font-bold bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-200 transition">
@@ -429,7 +429,7 @@
                                         <div><label class="block text-sm font-semibold text-slate-700 mb-1">Nama Sales / PIC <span class="text-red-600">*</span></label><input type="text" id="input-sales" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
                                         <div><label class="block text-sm font-semibold text-slate-700 mb-1">No HP Sales (WA) <span class="text-red-600">*</span></label><input type="text" id="input-phone-sales" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500" placeholder="0812xxxx"></div>
                                         <div><label class="block text-sm font-semibold text-slate-700 mb-1">Tanggal Laporan <span class="text-red-600">*</span></label><input type="date" id="input-date" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
-                                        <div class="md:col-span-1"><label class="block text-sm font-semibold text-slate-700 mb-1">Nama Customer / PT <span class="text-red-600">*</span></label><input type="text" id="input-customer" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500" placeholder=placeholder="Ex: IVP / MLDS"></div>
+                                        <div class="md:col-span-1"><label class="block text-sm font-semibold text-slate-700 mb-1">Nama Customer / PT <span class="text-red-600">*</span></label><input type="text" id="input-customer" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500" placeholder="Ex: IVP / MLDS"></div>
                                         <div class="md:col-span-2"><label class="block text-sm font-semibold text-slate-700 mb-1">No PO / SPK <span class="text-red-600">*</span></label><input type="text" id="input-po" required class="w-full rounded border-slate-300 p-2.5 border focus:ring-brand-500"></div>
                                     </div>
                                 </div>
@@ -1129,3 +1129,4 @@
     </script>
 </body>
 </html>
+
