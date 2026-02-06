@@ -1193,14 +1193,15 @@
                 options: { 
                     responsive: true, 
                     maintainAspectRatio: false, 
-                    layout: { padding: { top: 30 } }, // Space for label
+                    layout: { padding: { top: 40 } }, // Space for label
                     plugins: { 
                         legend: {display: false},
                         title: { display: true, text: 'Kasus Terbanyak Berdasarkan Kategori' },
                         datalabels: {
                             color: 'black',
-                            anchor: 'end',
-                            align: 'top',
+                            anchor: 'end,
+                            align: 'bottom',
+                            offset: '0'
                             font: { weight: 'bold' }
                         }
                     } 
@@ -1230,7 +1231,7 @@
                         datalabels: {
                             color: 'black',
                             anchor: 'end',
-                            align: 'top',
+                            align: 'bottom',
                             font: { weight: 'bold' }
                         }
                     }
@@ -1245,5 +1246,6 @@
     </script>
 </body>
 </html>
+
 
 
