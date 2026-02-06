@@ -65,6 +65,9 @@
         /* Hover Delete Button */
         .preview-wrapper:hover .delete-btn { opacity: 1; }
         
+        /* Thumbnail Preview */
+        .img-preview-container:hover .img-popover { display: block; }
+
         /* Readonly Input Style */
         .input-readonly { background-color: transparent; border-color: transparent; padding: 0; font-weight: 500; color: #1e293b; pointer-events: none; }
         .input-editable { background-color: #ffffff; border-color: #cbd5e1; padding: 0.25rem 0.5rem; pointer-events: auto; }
@@ -509,8 +512,13 @@
         </main>
     </div>
 
+    <!-- FOOTER VERSION INDICATOR -->
+    <footer class="text-center py-4 text-[10px] text-slate-400 bg-white border-t border-slate-100 mt-8">
+        Versi: 2.1 (Live) - <span id="last-updated">Last Updated</span>
+    </footer>
+
     <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxppq1wG-iLtAnumeBfODcXcijM7rm8dU0j6XRwdgShgQV6DtHxKe0akvndbzZ_zTwACw/exec"; 
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyfH4Ws06ze64IgfB7ulCHQy5iH-GqA9GOjmCuZL5hxxCOfk4FxhJikjiG3rnHSyr6WPA/exec"; 
         const ADMIN_KEYWORDS = ['admin', 'qc', 'boss', 'spv', 'manager']; 
         let isAdmin = false;
         let currentUser = "";
@@ -1097,12 +1105,9 @@
                 fileData = { name: currentFile.name, type: currentFile.type, content: base64Content };
             } catch (e) { alert("Gagal proses file"); btn.innerHTML = originalText; btn.disabled = false; return; }
 
-            const name = document.getElementById('input-sales').value;
-            const phone = document.getElementById('input-phone-sales').value;
-            const salesCombined = `${name} [${phone}]`;
-
             const formData = {
-                sales: salesCombined, 
+                sales: document.getElementById('input-sales').value,
+                phoneSales: document.getElementById('input-phone-sales').value,
                 date: document.getElementById('input-date').value,
                 customer: document.getElementById('input-customer').value,
                 po: document.getElementById('input-po').value,
@@ -1199,8 +1204,8 @@
                         title: { display: true, text: 'Kasus Terbanyak Berdasarkan Kategori' },
                         datalabels: {
                             color: 'black',
-                            anchor: 'end,
-                            align: 'top',
+                            anchor: 'end',
+                            align: 'bottom',
                             offset: 0,
                             font: { weight: 'bold' }
                         }
@@ -1219,13 +1224,13 @@
                         borderColor: '#f97316',
                         backgroundColor: 'rgba(249, 115, 22, 0.1)',
                         fill: true,
-                        tension: 0.4
+                        tension: 0.1
                     }] 
                 },
                 options: { 
                     responsive: true, 
                     maintainAspectRatio: false,
-                    layout: { padding: { top: 30 } }, // Space for label
+                    layout: { padding: { top: 20 } }, // Space for label
                     plugins: {
                         title: { display: true, text: 'Tren Kasus Per Bulan' },
                         datalabels: {
@@ -1240,13 +1245,6 @@
         }
         
         document.getElementById('input-urgency').addEventListener('input', function(e) { document.getElementById('urgency-val').innerText = e.target.value; });
-        
-        // Helper specifically for jQuery-style contains selector replacement
-        // Not used here, but good practice.
     </script>
 </body>
 </html>
-
-
-
-
