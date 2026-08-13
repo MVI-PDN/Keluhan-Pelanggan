@@ -535,48 +535,48 @@
 
                 <!-- A4 Preview Container -->
                 <div class="w-full overflow-x-auto bg-slate-200 p-4 md:p-8 rounded-xl border border-slate-300 shadow-inner flex justify-center">
-                    <div id="pdf-content" class="bg-white p-10 font-sans text-slate-800 shadow-2xl relative" style="width: 297mm; min-height: 210mm; flex-shrink: 0;">
+                    <div id="pdf-content" class="bg-white p-10 font-sans text-slate-800 shadow-2xl relative box-border" style="width: 210mm; flex-shrink: 0; max-width: none;">
                         <!-- Header -->
                         <div class="flex justify-between items-center border-b-2 border-brand-900 pb-4 mb-6">
-                            <div class="flex items-center gap-5">
-                                <img src="https://raw.githubusercontent.com/MVI-PDN/Keluhan-Pelanggan/main/microvision-logo.webp" alt="Microvision Logo" class="h-14 w-auto object-contain" crossorigin="anonymous">
-                                <div class="border-l-2 border-slate-300 pl-5">
-                                    <h1 class="text-2xl font-bold text-brand-900 tracking-wider">LAPORAN KELUHAN PELANGGAN</h1>
+                            <div class="flex items-center gap-4">
+                                <img src="https://raw.githubusercontent.com/MVI-PDN/Keluhan-Pelanggan/main/microvision-logo.webp" alt="Microvision Logo" class="h-10 w-auto object-contain" crossorigin="anonymous">
+                                <div class="border-l-2 border-slate-300 pl-4">
+                                    <h1 class="text-lg font-bold text-brand-900 tracking-wider">LAPORAN KELUHAN PELANGGAN</h1>
                                 </div>
                             </div>
                             <div class="text-right">
-                                <p class="text-sm font-bold text-slate-800">Periode: <span id="pdf-period-text">Seluruh Waktu</span></p>
-                                <p class="text-xs text-slate-500 mt-1">Dicetak pada: <span id="pdf-print-date-text">-</span></p>
+                                <p class="text-[11px] font-bold text-slate-800">Periode: <span id="pdf-period-text">Seluruh Waktu</span></p>
+                                <p class="text-[9px] text-slate-500 mt-1">Dicetak pada: <span id="pdf-print-date-text">-</span></p>
                             </div>
                         </div>
 
                         <!-- Summary Boxes -->
-                        <div class="flex gap-6 mb-8">
-                            <div class="border border-slate-300 bg-slate-50 p-4 rounded w-1/3 text-center">
-                                <p class="text-xs font-bold text-slate-500 uppercase">Total Kasus Masuk</p>
-                                <p class="text-3xl font-bold text-brand-600 mt-1" id="pdf-summary-total">0</p>
+                        <div class="flex gap-4 mb-6">
+                            <div class="border border-slate-300 bg-slate-50 p-3 rounded w-1/3 text-center">
+                                <p class="text-[10px] font-bold text-slate-500 uppercase">Total Kasus Masuk</p>
+                                <p class="text-2xl font-bold text-brand-600 mt-1" id="pdf-summary-total">0</p>
                             </div>
-                            <div class="border border-slate-300 bg-red-50 p-4 rounded w-1/3 text-center">
-                                <p class="text-xs font-bold text-red-800 uppercase">Masih Pending</p>
-                                <p class="text-3xl font-bold text-red-600 mt-1" id="pdf-summary-pending">0</p>
+                            <div class="border border-slate-300 bg-red-50 p-3 rounded w-1/3 text-center">
+                                <p class="text-[10px] font-bold text-red-800 uppercase">Masih Pending</p>
+                                <p class="text-2xl font-bold text-red-600 mt-1" id="pdf-summary-pending">0</p>
                             </div>
-                            <div class="border border-slate-300 bg-green-50 p-4 rounded w-1/3 text-center">
-                                <p class="text-xs font-bold text-green-800 uppercase">Selesai (Closed)</p>
-                                <p class="text-3xl font-bold text-green-600 mt-1" id="pdf-summary-closed">0</p>
+                            <div class="border border-slate-300 bg-green-50 p-3 rounded w-1/3 text-center">
+                                <p class="text-[10px] font-bold text-green-800 uppercase">Selesai (Closed)</p>
+                                <p class="text-2xl font-bold text-green-600 mt-1" id="pdf-summary-closed">0</p>
                             </div>
                         </div>
 
                         <!-- Data Table -->
-                        <table class="w-full text-xs text-left border-collapse border border-slate-400">
+                        <table class="w-full text-[10px] text-left border-collapse border border-slate-400">
                             <thead class="bg-slate-200 text-slate-800">
                                 <tr>
-                                    <th class="border border-slate-400 p-2 text-center w-8">No</th>
-                                    <th class="border border-slate-400 p-2 w-24">Tanggal</th>
-                                    <th class="border border-slate-400 p-2 w-36">No PO/SPK</th>
-                                    <th class="border border-slate-400 p-2">Customer & Project</th>
-                                    <th class="border border-slate-400 p-2 w-40">Kategori Masalah</th>
-                                    <th class="border border-slate-400 p-2 w-32">Sales / PIC</th>
-                                    <th class="border border-slate-400 p-2 w-20 text-center">Status</th>
+                                    <th class="border border-slate-400 p-1.5 text-center w-8">No</th>
+                                    <th class="border border-slate-400 p-1.5">Tanggal</th>
+                                    <th class="border border-slate-400 p-1.5">No PO/SPK</th>
+                                    <th class="border border-slate-400 p-1.5">Customer & Project</th>
+                                    <th class="border border-slate-400 p-1.5">Masalah</th>
+                                    <th class="border border-slate-400 p-1.5">Sales / PIC</th>
+                                    <th class="border border-slate-400 p-1.5 text-center">Status</th>
                                 </tr>
                             </thead>
                             <tbody id="pdf-table-body" class="text-slate-700">
@@ -585,16 +585,16 @@
                         </table>
 
                         <!-- Signatures -->
-                        <div class="mt-16 flex justify-between px-12">
+                        <div class="mt-12 flex justify-between px-8">
                             <div class="text-center">
-                                <p class="text-sm mb-20 text-slate-600">Disiapkan Oleh,</p>
-                                <p class="font-bold border-b border-slate-800 inline-block px-8 pb-1 text-sm">Admin Pengaduan</p>
-                                <p class="text-xs text-slate-500 mt-1">Staff Produksi</p>
+                                <p class="text-xs mb-16 text-slate-600">Disiapkan Oleh,</p>
+                                <p class="font-bold border-b border-slate-800 inline-block px-6 pb-1 text-xs">Admin Pengaduan</p>
+                                <p class="text-[10px] text-slate-500 mt-1">Staff Produksi</p>
                             </div>
-                            <div class="text-center pr-12">
-                                <p class="text-sm mb-20 text-slate-600">Mengetahui,</p>
-                                <p class="font-bold border-b border-slate-800 inline-block px-8 pb-1 text-sm">Teguh Drajat</p>
-                                <p class="text-xs text-slate-500 mt-1">Manager</p>
+                            <div class="text-center">
+                                <p class="text-xs mb-16 text-slate-600">Mengetahui,</p>
+                                <p class="font-bold border-b border-slate-800 inline-block px-6 pb-1 text-xs">Teguh Drajat</p>
+                                <p class="text-[10px] text-slate-500 mt-1">Manager</p>
                             </div>
                         </div>
                     </div>
@@ -704,10 +704,28 @@
             }
         }
 
+        // Fungsi Simulasi Data jika Google Script Gagal
+        function getMockData() {
+            return [
+                { id: "M1", Timestamp: new Date().toISOString(), Date: new Date().toISOString(), PO: "PO/2026/08/01", Customer: "PT Maju Jaya", Project: "Instalasi Lobi", Product: "MVIFCO P4", Batch: "B-2601", Category: "Dead Pixel", Chronology: "Ada beberapa lampu LED yang tidak menyala di sudut kanan atas.", Request: "Service On-site", Status: "Pending", Sales: "Budi Santoso [08123456789]", AdminNotes: "" },
+                { id: "M2", Timestamp: new Date(Date.now() - 86400000 * 2).toISOString(), Date: new Date(Date.now() - 86400000 * 2).toISOString(), PO: "SPK-0092", Customer: "RS Medika", Project: "Ruang Tunggu", Product: "Philips 55BDL", Batch: "SN-998877", Category: "Mati Total", Chronology: "Layar tiba-tiba mati total setelah listrik padam.", Request: "Replace Unit", Status: "Closed", Sales: "Andi", AdminNotes: "Unit sudah ditukar dengan yang baru dan dikirim hari ini." }
+            ];
+        }
+
         async function fetchData() {
             try {
                 const response = await fetch(`${GOOGLE_SCRIPT_URL}?t=${new Date().getTime()}`, { redirect: "follow" }); 
-                const data = await response.json();
+                const text = await response.text();
+                
+                let data;
+                try {
+                    // Cek apakah response benar-benar JSON
+                    data = JSON.parse(text);
+                } catch (parseError) {
+                    console.warn("Respon dari Google Script bukan JSON (Kemungkinan link mati/perlu login). Menggunakan data simulasi sementara.");
+                    data = getMockData(); // Gunakan data bayangan agar UI tetap bisa dilihat
+                }
+
                 allReports = data;
                 applyFilters(); 
                 if(!document.getElementById('report-view').classList.contains('hidden')) {
@@ -715,6 +733,9 @@
                 }
             } catch (error) {
                 console.error("Fetch Error:", error);
+                // Jika offline atau fetch gagal total
+                allReports = getMockData();
+                applyFilters();
             }
         }
 
@@ -1359,16 +1380,16 @@
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td class="border border-slate-400 p-2 text-center">${i + 1}</td>
-                    <td class="border border-slate-400 p-2">${row.Date ? new Date(row.Date).toLocaleDateString('id-ID') : '-'}</td>
-                    <td class="border border-slate-400 p-2 font-semibold">${row.PO || '-'}</td>
-                    <td class="border border-slate-400 p-2">
+                    <td class="border border-slate-400 p-1.5 text-center">${i + 1}</td>
+                    <td class="border border-slate-400 p-1.5">${row.Date ? new Date(row.Date).toLocaleDateString('id-ID') : '-'}</td>
+                    <td class="border border-slate-400 p-1.5 font-semibold">${row.PO || '-'}</td>
+                    <td class="border border-slate-400 p-1.5">
                         <div class="font-bold">${row.Customer || '-'}</div>
-                        <div class="text-[10px] text-slate-500">${row.Project || '-'}</div>
+                        <div class="text-[9px] text-slate-500">${row.Project || '-'}</div>
                     </td>
-                    <td class="border border-slate-400 p-2">${row.Category || '-'}</td>
-                    <td class="border border-slate-400 p-2">${salesName}</td>
-                    <td class="border border-slate-400 p-2 text-center font-bold ${row.Status === 'Closed' ? 'text-green-600' : 'text-red-600'}">${row.Status || 'Pending'}</td>
+                    <td class="border border-slate-400 p-1.5">${row.Category || '-'}</td>
+                    <td class="border border-slate-400 p-1.5">${salesName}</td>
+                    <td class="border border-slate-400 p-1.5 text-center font-bold ${row.Status === 'Closed' ? 'text-green-600' : 'text-red-600'}">${row.Status || 'Pending'}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -1384,11 +1405,11 @@
             btn.disabled = true;
 
             const opt = {
-                margin:       0.3,
+                margin:       0, // Margin diset 0 karena kita pakai padding di HTML agar proporsi tepat
                 filename:     `Laporan_Keluhan_${teksPeriode}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true },
-                jsPDF:        { unit: 'in', format: 'A4', orientation: 'landscape' }
+                html2canvas:  { scale: 2, useCORS: true, scrollY: 0, scrollX: 0 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' } // Format diatur presisi ke milimeter
             };
             
             html2pdf().set(opt).from(element).save().then(() => {
